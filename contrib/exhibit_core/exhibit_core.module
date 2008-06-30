@@ -1,0 +1,58 @@
+<?php
+// $Id$
+/**
+ * exhibit_core.module - Provides Exhibit JSON data feeds of Drupal content.
+ *
+ * @author Arto Bendiken <http://bendiken.net/>
+ * @copyright Copyright (c) 2007 Arto Bendiken. All rights reserved.
+ * @license GPL <http://creativecommons.org/licenses/GPL/2.0/>
+ * @package exhibit_core.module
+ */
+
+//////////////////////////////////////////////////////////////////////////////
+// Core API hooks
+
+/**
+ * Implementation of hook_menu().
+ */
+function exhibit_core_menu() {
+  return array(
+    'exhibit/drupal/users' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_core_callback',
+      'page arguments' => array('exhibit_core_get_users'),
+      'file' => 'exhibit_core.pages.inc',
+    ),
+    'exhibit/drupal/terms/%taxonomy_vocabulary' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_core_callback',
+      'page arguments' => array('exhibit_core_get_terms', 3),
+      'file' => 'exhibit_core.pages.inc',
+    ),
+    'exhibit/drupal/nodes' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_core_callback',
+      'page arguments' => array('exhibit_core_get_nodes'),
+      'file' => 'exhibit_core.pages.inc',
+    ),
+    /*'admin/content/exhibit/add/internal' => array(
+      'title' => 'Add Drupal feed',
+      'type' => MENU_LOCAL_TASK,
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('exhibit_core_admin_feed_form'),
+      'file' => 'exhibit_core.admin.inc',
+    ),*/
+  );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Menu callbacks
+
+function exhibit_core_callback($callback) {
+  $args = array_slice(func_get_args(), 1);
+  require_once drupal_get_path('module', 'exhibit') . '/exhibit.pages.inc';
+  exhibit_output('application/json', drupal_to_js(call_user_func_array($callback, $args)));
+}

@@ -1,0 +1,97 @@
+<?php
+// $Id$
+/**
+ * exhibit_views.module - Provides Exhibit JSON data feeds of Views queries.
+ *
+ * @author Arto Bendiken <http://bendiken.net/>
+ * @copyright Copyright (c) 2007 Arto Bendiken. All rights reserved.
+ * @license GPL <http://creativecommons.org/licenses/GPL/2.0/>
+ * @package exhibit.module
+ * @subpackage exhibit_views.module
+ */
+
+//////////////////////////////////////////////////////////////////////////////
+// Core API hooks
+
+/**
+ * Implementation of hook_init().
+ */
+function exhibit_views_init() {
+  // Add Exhibit JSON autodiscovery link to Views pages
+  if (user_access('access exhibits')) {
+    if (($item = menu_get_item()) && $item['page_callback'] == 'views_page') {
+      if ($view_name = $item['page_arguments'][0]) {
+        exhibit_add_link('exhibit/views/' . $view_name);
+      }
+    }
+  }
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function exhibit_views_menu() {
+  return array(
+    'exhibit/views/%' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_output_view',
+      'page arguments' => array(2),
+      'file' => '../../exhibit.pages.inc',
+    ),
+  );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Menu callbacks
+
+function exhibit_output_view($view_name) {
+  $items = $types = $props = array();
+
+  if (!($view = views_get_view($view_name))) {
+    return drupal_not_found();
+  }
+
+  // TODO: would need some way to form the plural form of the type label?
+  $view_data = views_fetch_data($view->base_table);
+  $types[$view->base_table] = array('label' => $view_data['table']['base']['title']);
+
+  // Allow the label field's name to be specified as a URL parameter,
+  // auto-prepending the base table name if necessary
+  $label_field = isset($_GET['label']) ? check_plain($_GET['label']) : NULL;
+  if (strpos($label_field, $view->base_table . '_') !== 0) {
+    $label_field = $view->base_table . '_' . $label_field;
+  }
+
+  // Convert the view's field definitions into Exhibit-compatible property
+  // definitions as best we can
+  $fields = $view->display['default']->display_options['fields'];
+  foreach ($fields as $field_name => $field) {
+    $field_name = $field['table'] . '_' . $field_name;
+    if (is_null($label_field)) {
+      $label_field = $field_name;
+    }
+    $props[$field_name] = array('label' => $field['label']);
+  }
+
+  // Execute the query for the view's default display
+  $view->execute(NULL);
+
+  // If results were returned, assemble them into Exhibit-compatible items
+  if (!empty($view->result)) {
+    foreach ($view->result as $row) {
+      $item = array('type' => $view->base_table, 'label' => $row->$label_field);
+
+      foreach ($fields as $field_name => $field) {
+        $field_name = $field['table'] . '_' . $field_name;
+        if (isset($row->$field_name)) {
+          $item[$field_name] = $row->$field_name;
+        }
+      }
+
+      $items[] = $item;
+    }
+  }
+
+  return exhibit_output('application/json', drupal_to_js(exhibit_json($items, $types, $props)));
+}

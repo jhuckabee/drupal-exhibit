@@ -1,0 +1,414 @@
+<?php
+// $Id$
+/**
+ * exhibit.module - Creates faceted visualizations of structured data.
+ *
+ * @author Arto Bendiken <http://bendiken.net/>
+ * @copyright Copyright (c) 2007-2008 Arto Bendiken. All rights reserved.
+ * @license GPL <http://creativecommons.org/licenses/GPL/2.0/>
+ * @package exhibit.module
+ */
+
+//////////////////////////////////////////////////////////////////////////////
+
+define('EXHIBIT_DATE_FORMAT',   '%Y-%m-%dT%H:%M:%SZ');
+define('EXHIBIT_XMLNS_URL',     'http://simile.mit.edu/2006/11/exhibit#');
+define('EXHIBIT_JS_URL',        variable_get('exhibit_js_url', 'http://static.simile.mit.edu/exhibit/api-2.0/exhibit-api.js'));
+define('EXHIBIT_FEED_LIFETIME', (int)variable_get('timeline_feed_lifetime', 0));
+define('EXHIBIT_FEED_ETAG',     (bool)variable_get('timeline_feed_etag', TRUE));
+
+//////////////////////////////////////////////////////////////////////////////
+// Core API hooks
+
+/**
+ * Implementation of hook_help().
+ */
+function exhibit_help($path) {
+  switch ($path) {
+    case 'admin/help#exhibit':
+      return '<p>' . t('') . '</p>'; // TODO
+    case 'admin/settings/exhibit':
+      //return '<p>' . t('') . '</p>'; // TODO
+  }
+}
+
+/**
+ * Implementation of hook_perm().
+ */
+function exhibit_perm() {
+  return array(
+    'administer exhibit feeds',
+    //'use external exhibit feeds', // TODO
+    'access exhibits',
+    'create exhibits',
+    'edit exhibits',
+    'edit own exhibits',
+    'delete exhibits',
+    'delete own exhibits',
+  );
+}
+
+/**
+ * Implementation of hook_menu().
+ */
+function exhibit_menu() {
+  return array(
+    'node/%node/exhibit-json' => array(
+      'type' => MENU_CALLBACK,
+      'access callback' => 'user_access',
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_output_node',
+      'page arguments' => array(1),
+      'file' => 'exhibit.pages.inc',
+    ),
+    'node/__history__.html' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_output_history',
+      'file' => 'exhibit.pages.inc',
+    ),
+    'exhibit/tsv/%' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_output_convert',
+      'page arguments' => array(2, 'exhibit_parse_tsv', 'text/tab-separated-values'),
+      'file' => 'exhibit.pages.inc',
+    ),
+    'exhibit/feeds/%exhibit_feed' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_output_feed',
+      'page arguments' => array(2),
+      'file' => 'exhibit.pages.inc',
+    ),
+    'admin/settings/exhibit' => array(
+      'title' => 'Exhibits',
+      'description' => 'Settings for the Exhibit module.',
+      'access arguments' => array('administer site configuration'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('exhibit_admin_settings'),
+      'file' => 'exhibit.admin.inc',
+    ),
+    'admin/content/exhibit' => array(
+      'title' => 'Exhibit feeds',
+      'access arguments' => array('administer exhibit feeds'),
+      'page callback' => 'exhibit_admin_feeds',
+      'file' => 'exhibit.admin.inc',
+    ),
+    'admin/content/exhibit/list' => array(
+      'title' => 'List',
+      'type' => MENU_DEFAULT_LOCAL_TASK,
+      'access arguments' => array('administer exhibit feeds'),
+      'weight' => -10,
+    ),
+    'admin/content/exhibit/add' => array(
+      'title' => 'Add data feed',
+      'type' => MENU_LOCAL_TASK,
+      'access arguments' => array('administer exhibit feeds'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('exhibit_admin_feed_form'),
+      'file' => 'exhibit.admin.inc',
+      'weight' => 10,
+    ),
+    'admin/content/exhibit/edit/%exhibit_feed' => array(
+      'title' => 'Edit data feed',
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('administer exhibit feeds'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('exhibit_admin_feed_form', 4),
+      'file' => 'exhibit.admin.inc',
+    ),
+    'admin/content/exhibit/delete/%exhibit_feed' => array(
+      'title' => 'Delete data feed',
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('administer exhibit feeds'),
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('exhibit_admin_feed_delete', 4),
+      'file' => 'exhibit.admin.inc',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_theme().
+ */
+function exhibit_theme() {
+  return array(
+    'exhibit' => array(
+      'arguments' => array('node' => NULL),
+    ),
+  );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Node API hooks
+
+/**
+ * Implementation of hook_node_info().
+ */
+function exhibit_node_info() {
+  return array(
+    'exhibit' => array(
+      'name'        => t('Exhibit'),
+      'module'      => 'exhibit', //_node',
+      'description' => t('An <em>exhibit</em> displays structured data in the form of rich visualizations that can be searched, filtered and sorted using faceted browsing.'),
+      'has_title'   => TRUE,
+      'title_label' => t('Title'),
+      'has_body'    => TRUE,
+      'body_label'  => t('Description'),
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_access().
+ */
+function exhibit_access($op, $node) {
+  switch ($op) {
+    case 'view':
+      return user_access('access exhibits');
+    case 'create':
+      return user_access('create exhibits');
+    case 'update':
+      global $user;
+      return user_access('edit exhibits') || (user_access('edit own exhibits') && $user->uid == $node->uid);
+    case 'delete':
+      global $user;
+      return user_access('delete exhibits') || (user_access('delete own exhibits') && $user->uid == $node->uid);
+  }
+}
+
+/**
+ * Implementation of hook_load().
+ */
+function exhibit_load($node) {
+  $exhibit = db_fetch_array(db_query('SELECT * FROM {exhibit_nodes} WHERE vid = %d', $node->vid));
+  $exhibit['feeds'] = explode(',', $exhibit['feeds']);
+  return (object)array('exhibit' => $exhibit);
+}
+
+/**
+ * Implementation of hook_validate().
+ */
+function exhibit_validate(&$node) {}
+
+/**
+ * Implementation of hook_insert().
+ */
+function exhibit_insert($node) {
+  $node->exhibit['feeds'] = implode(',', array_filter(array_values($node->exhibit['feeds']), 'trim'));
+  db_query("INSERT INTO {exhibit_nodes} (nid, vid, feeds, definition) VALUES (%d, %d, '%s', '%s')", $node->nid, $node->vid, $node->exhibit['feeds'], $node->exhibit['definition']);
+}
+
+/**
+ * Implementation of hook_update().
+ */
+function exhibit_update($node) {
+  if ($node->revision) {
+    return exhibit_insert($node);
+  }
+  $node->exhibit['feeds'] = implode(',', array_filter(array_values($node->exhibit['feeds']), 'trim'));
+  db_query("UPDATE {exhibit_nodes} SET feeds = '%s', definition = '%s' WHERE vid = %d", $node->exhibit['feeds'], $node->exhibit['definition'], $node->vid);
+}
+
+/**
+ * Implementation of hook_delete().
+ */
+function exhibit_delete($node) {
+  db_query('DELETE FROM {exhibit_nodes} WHERE nid = %d', $node->nid);
+}
+
+/**
+ * Implementation of hook_nodeapi().
+ */
+function exhibit_nodeapi(&$node, $op, $teaser, $page) {
+  switch ($op) {
+    case 'delete revision':
+      db_query('DELETE FROM {exhibit_nodes} WHERE vid = %d', $node->vid);
+      break;
+  }
+}
+
+/**
+ * Implementation of hook_form().
+ */
+function exhibit_form(&$node, &$param) {
+  $type = node_get_types('type', $node);
+
+  if ($type->has_title) {
+    $form['title'] = array('#type' => 'textfield', '#title' => check_plain($type->title_label), '#required' => TRUE, '#default_value' => $node->title, '#weight' => -5);
+  }
+
+  if ($type->has_body) {
+    // FIXME: this works around a bug in node_submit(), lines 782-793, which
+    // causes the body field to be emptied when not using node_body_field()
+    // to generate the body and format fieldset. Need to submit a core patch.
+    $form['teaser_include'] = array('#type' => 'hidden', '#value' => '1');
+
+    $form['body_filter'] = array('#type' => 'fieldset', '#title' => check_plain($type->body_label), '#collapsible' => TRUE, '#collapsed' => TRUE);
+    $form['body_filter']['body'] = array('#type' => 'textarea', '#title' => t('Description'), '#default_value' => $node->body, '#required' => ($type->min_word_count > 0), '#rows' => 2);
+    $form['body_filter']['format'] = filter_form($node->format);
+  }
+
+  $form['exhibit'] = array('#type' => 'fieldset', '#title' => t('Exhibit'), '#collapsible' => TRUE, '#collapsed' => FALSE, '#tree' => TRUE);
+  $form['exhibit']['feeds'] = array('#type' => 'checkboxes', '#title' => t('Data feeds'), '#default_value' => !empty($node->exhibit['feeds']) ? $node->exhibit['feeds'] : array(), '#options' => exhibit_get_feeds('title'));
+  $form['exhibit']['definition'] = array('#type' => 'textarea', '#title' => t('Definition'), '#default_value' => @$node->exhibit['definition'], '#rows' => 10);
+
+  return $form;
+}
+
+/**
+ * Implementation of hook_view().
+ */
+function exhibit_view($node, $teaser = FALSE, $page = FALSE) {
+  // Load the SIMILE Exhibit API and any enabled extensions
+  drupal_set_html_head('<script type="text/javascript" src="'. EXHIBIT_JS_URL .'"></script>'."\n");
+
+  // Load any enabled Exhibit extensions
+  $enabled_extensions = array_filter(variable_get('exhibit_extensions', array()), 'is_string');
+  foreach (exhibit_exhibit_views() as $id => $view) {
+    if (in_array($id, $enabled_extensions)) {
+      drupal_set_html_head('<script type="text/javascript" src="'. $view['href'] .'"></script>'."\n");
+    }
+  }
+
+  // Insert <LINK> references to all enabled data feeds
+  foreach ($node->exhibit['feeds'] as $fid) {
+    if ($feed = exhibit_feed_load($fid)) {
+      exhibit_add_feed(exhibit_get_feed_url($feed), check_plain($feed['type']));
+    }
+  }
+
+  $node = node_prepare($node, $teaser);
+  $node->content['exhibit'] = array('#value' => $node->exhibit['definition'], '#weight' => 1);
+  return $node;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Exhibit API hooks
+
+/**
+ * Implementation of hook_exhibit_views().
+ */
+function exhibit_exhibit_views() {
+  return array(
+    'tile'      => array(
+      'title'   => t('Tile (default)'),
+      'class'   => '',
+    ),
+    'thumbnail' => array(
+      'title'   => t('Thumbnail'),
+      'class'   => 'Thumbnail',
+    ),
+    'map'       => array(
+      'title'   => t('Map'),
+      'class'   => 'Map',
+      'href'    => 'http://static.simile.mit.edu/exhibit/extensions-2.0/map/map-extension.js?gmapkey=' . variable_get('exhibit_gmap_key', ''),
+    ),
+    'barchart'  => array(
+      'title'   => t('Barchart'),
+      'class'   => 'Barchart',
+      'href'    => 'http://static.simile.mit.edu/exhibit/extensions-2.0/chart/chart-extension.js',
+    ),
+    'scatterplot' => array(
+      'title'   => t('Scatterplot'),
+      'class'   => 'Scatterplot',
+      'href'    => 'http://static.simile.mit.edu/exhibit/extensions-2.0/chart/chart-extension.js',
+    ),
+    'timeline'  => array(
+      'title'   => t('Timeline'),
+      'class'   => 'Timeline',
+      'href'    => 'http://static.simile.mit.edu/exhibit/extensions-2.0/time/time-extension.js',
+    ),
+    'tabular'   => array(
+      'title'   => t('Tabular'),
+      'class'   => 'Tabular',
+    ),
+  );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Exhibit API functions
+
+function exhibit_add_link($url) {
+  drupal_add_link(array('rel' => 'meta', 'type' => 'application/json', 'title' => 'Exhibit JSON', 'href' => url($url)));
+}
+
+function exhibit_add_feed($url, $type = 'application/json') {
+  switch ($type) {
+    case 'application/vnd.google-spreadsheet': // special case
+      drupal_add_link(array('rel' => 'exhibit/data', 'href' => $url, 'type' => 'application/jsonp', 'ex:converter' => 'googleSpreadsheets'));
+      break;
+    default:
+      drupal_add_link(array('rel' => 'exhibit/data', 'href' => $url, 'type' => $type));
+      break;
+  }
+}
+
+function exhibit_feed_load($fid) {
+  return db_fetch_array(db_query('SELECT f.* FROM {exhibit_feeds} f WHERE f.fid = %d', $fid));
+}
+
+function exhibit_get_feeds($key = NULL) {
+  $feeds = array();
+  $result = db_query('SELECT f.* FROM {exhibit_feeds} f ORDER BY f.title ASC');
+  while ($feed = db_fetch_object($result)) {
+    $feeds[$feed->fid] = $key ? $feed->$key : $feed;
+  }
+  return $feeds;
+}
+
+function exhibit_get_feed_url($feed) {
+  $feed = (object)$feed;
+  return url(!empty($feed->cache) ? 'exhibit/feeds/' . $feed->fid : $feed->url);
+}
+
+function exhibit_get_feed_contents($url) {
+  if (!preg_match('!^[\w\d\+\-]+://!', $url)) {
+    // Internal Drupal path
+    ob_start();
+    $result = $url ? menu_execute_active_handler($url) : MENU_NOT_FOUND;
+    $output = ob_get_clean();
+    if (is_int($result)) {
+      switch ($result) {
+        case MENU_NOT_FOUND:
+          return die(drupal_not_found());
+        case MENU_ACCESS_DENIED:
+          return die(drupal_access_denied());
+      }
+    }
+  }
+  else {
+    // External URL
+    $output = file_get_contents($url);
+  }
+  return $output;
+}
+
+function exhibit_json($items, $types = NULL, $properties = NULL) {
+  return exhibit_compact_item(array(
+    'types'      => $types,
+    'properties' => $properties,
+    'items'      => $items,
+  ));
+}
+
+function exhibit_compact_item($item) {
+  foreach ($item as $k => $v) {
+    if (is_null($v)) {
+      unset($item[$k]);
+    }
+  }
+  return $item;
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Theme callbacks
+
+function theme_exhibit() { // TODO
+  return '<div ex:role="viewPanel"><div ex:role="view"></div></div>';
+}
+
+function theme_exhibit_lens() { // TODO
+  return '<div ex:content=".label" class="label"></div>';
+}

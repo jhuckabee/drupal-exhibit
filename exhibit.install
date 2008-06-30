@@ -1,0 +1,129 @@
+<?php
+// $Id$
+/**
+ * exhibit.install - Module installation/uninstallation.
+ *
+ * @author Arto Bendiken <http://bendiken.net/>
+ * @copyright Copyright (c) 2007-2008 Arto Bendiken. All rights reserved.
+ * @license GPL <http://creativecommons.org/licenses/GPL/2.0/>
+ * @package exhibit.module
+ */
+
+//////////////////////////////////////////////////////////////////////////////
+// Core API hooks
+
+/**
+ * Implementation of hook_enable().
+ */
+function exhibit_enable() {
+  drupal_set_message(t('Exhibit successfully installed. Please review the available <a href="@settings">configuration settings</a>.', array('@settings' => url('admin/settings/exhibit'))));
+}
+
+/**
+ * Implementation of hook_install().
+ */
+function exhibit_install() {
+  drupal_install_schema('exhibit');
+
+  // Default options: Promoted to front page = No
+  variable_set('node_options_exhibit', array('status'));
+  // Default comment setting: Disabled
+  variable_set('comment_exhibit', '0');
+}
+
+/**
+ * Implementation of hook_uninstall().
+ */
+function exhibit_uninstall() {
+  drupal_uninstall_schema('exhibit');
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Schema API hooks
+
+/**
+ * Implementation of hook_schema().
+ */
+function exhibit_schema() {
+  return array(
+    'exhibit_feeds' => array(
+      'description' => t('Stores exhibit data feed information.'),
+      'fields' => array(
+        'fid' => array(
+          'description' => t("The data feed's unique ID (primary key)."),
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+        ),
+        'module' => array(
+          'description' => t("The module providing the data feed."),
+          'type' => 'varchar',
+          'length' => 64,
+          'default' => '',
+        ),
+        'title' => array(
+          'description' => t("The data feed's title."),
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+        ),
+        'enabled' => array(
+          'description' => t("The data feed's enabled status (1 = enabled, 0 = disabled)"),
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 1,
+          'size' => 'tiny',
+        ),
+        'cache' => array(
+          'description' => t("Binary flag to indicate the data feed's caching mode. (0 = Do not cache, 1 = Cache per role, 2 = Cache per user, 4 = Cache globally)"),
+          'type' => 'int',
+          'not null' => TRUE,
+          'default' => 0,
+          'size' => 'tiny',
+        ),
+        'type' => array(
+          'description' => t("The data feed's MIME type."),
+          'type' => 'varchar',
+          'length' => 64,
+          'default' => '',
+        ),
+        'url' => array(
+          'description' => t("The data feed's URL."),
+          'type' => 'text',
+        ),
+      ),
+      'primary key' => array('fid'),
+    ),
+    'exhibit_nodes' => array(
+      'description' => t('Stores exhibit node data.'),
+      'fields' => array(
+        'nid' => array(
+          'description' => t("The node's ID from {node}.nid."),
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'vid' => array(
+          'description' => t("The node's version ID from {node}.vid."),
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'default' => 0,
+        ),
+        'feeds' => array(
+          'description' => t("The exhibit's data feed IDs, as a comma-separated list."),
+          'type' => 'varchar',
+          'length' => 255,
+          'default' => '',
+        ),
+        'definition' => array(
+          'description' => t("The exhibit's XHTML definition."),
+          'type' => 'text',
+          'size' => 'big',
+        ),
+      ),
+      'primary key' => array('nid', 'vid'),
+    ),
+  );
+}

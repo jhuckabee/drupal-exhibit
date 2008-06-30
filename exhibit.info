@@ -1,0 +1,6 @@
+; $Id$
+name = Exhibit
+description = Displays structured data in the form of rich visualizations that can be searched, filtered and sorted using faceted browsing.
+package = SIMILE
+core = 6.x
+php = 5.2

@@ -1,0 +1,108 @@
+// $Id$
+
+NOTE: This is experimental software meant for advanced users; assume nothing
+works, and you may be pleasantly surprised. And when it breaks, you get to
+keep both pieces.
+
+GETTING STARTED
+---------------
+At present, you will NOT be able to utilize this module unless you understand
+how to build exhibits in XHTML, as explained in the material at:
+
+  <http://simile.mit.edu/wiki/Exhibit/Getting_Started_Tutorial>
+
+Assuming that you have worked your way through the aforementioned tutorial,
+and are very familiar with Drupal in general, here's how to start using this
+module:
+
+  1. Install and enable the two included modules 'Exhibit' and
+     'Exhibit Drupal'.
+
+     The latter module generates Exhibit-compatible JSON data feeds of Drupal
+     users, nodes and taxonomy terms; you can do without this module if you
+     merely want to mash up external data sources (but in that case you won't
+     be needing these instructions).
+
+  2. Go to admin/content/exhibit and create two data feeds of the type
+     'Exhibit JSON'. You can give them any titles that make sense to you, as
+     long as you specify the following URLs:
+
+       exhibit/drupal/users
+       exhibit/drupal/nodes
+
+     These two data feeds will allow you to pull in information on all your
+     Drupal instance's users and nodes into the exhibits you create.
+
+  3. (This step can be skipped.)
+     If you have any taxonomy vocabularies you wish to utilize in exhibits,
+     you can create data feeds with URLs of the following form:
+
+       exhibit/drupal/terms/<VID>
+
+     Replace <VID> with the relevant numeric vocabulary ID.
+
+  4. (This step can be skipped.)
+     If you wish to obtain data feeds containing only a specific Drupal
+     content type, use feed URLs of the following form:
+
+      exhibit/drupal/nodes/<TYPE>
+
+     Replace <TYPE> with the machine-readable name of a content type, for
+     instance, 'page' or 'story'.
+
+  5. Go to node/add/exhibit to create an exhibit node. Give it any title and
+     description you wish, select some of the data feeds you've created,
+     and copy and paste the following into the Definition text box in order to
+     generate a minimalistic, very simple exhibit:
+
+       <div ex:role="viewPanel"><div ex:role="view"></div></div>
+
+  6. Save your exhibit node and view the results of your labors.
+     Congratulations, you should be seeing a not-very-pretty, but functional,
+     list of all the items in the data feeds you selected.
+
+  7. For anything fancier, familiarize yourself with all the material at:
+
+       <http://simile.mit.edu/wiki/Exhibit/For_Authors>
+
+     ...and/or collaborate with the author of this Drupal module to build a
+     snazzy, user-friendly UI for generating exhibit definitions.
+
+
+EXHIBIT VIEWS
+-------------
+This module includes a module called 'Exhibit Views' that generates
+Exhibit-compatible JSON data feeds of views defined using the Views module,
+available from:
+
+  <http://drupal.org/project/views>
+
+  1. Install and enable the two included modules 'Exhibit' and
+     'Exhibit Views'.
+
+  2. For any views you wish to utilize in exhibits, create data feeds with
+     URLs of the following form:
+
+       exhibit/views/<NAME>
+
+     Replace <NAME> with the unique view name of the view in question, e.g.
+     'tracker'.
+
+  3. The JSON feed will, by default, utilize the first view field as the
+     data items' label (the presence of a special label field is required by
+     Exhibit). To use another field, you can manually specify an additional
+     'label' query parameter in the data feed's URL as follows:
+
+       exhibit/views/<NAME>?label=<LABEL_FIELD>
+
+     Replace <LABEL_FIELD> with the internal field name, e.g.  'name'. It
+     is recommended you specify the full table-qualified name, such as
+     'users_name', if you know it; however, in most cases that are
+     unambiguous, the field name itself without the table-qualifier prefix,
+     such as 'name', will probably do fine.
+
+     Utilizing this option may require some familiarity with Views internals
+     as Views does not expose the required internal field name in its
+     administrative interface. In general, though, you may be able to either
+     guess the internal name (e.g. 'User: E-mail' has the internal name
+     'mail') or determine it by examining the JSON output.

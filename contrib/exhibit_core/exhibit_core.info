@@ -1,0 +1,7 @@
+; $Id$
+name = Exhibit Drupal
+description = Provides Exhibit JSON data feeds of Drupal users, nodes and taxonomy terms.
+package = SIMILE
+dependencies[] = exhibit
+core = 6.x
+php = 5.2

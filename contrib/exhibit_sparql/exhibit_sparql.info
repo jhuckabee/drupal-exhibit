@@ -1,0 +1,8 @@
+; $Id$
+name = Exhibit SPARQL
+description = Provides Exhibit JSON data feeds of SPARQL query results.
+package = SIMILE
+dependencies[] = exhibit
+dependencies[] = sparql
+core = 6.x
+php = 5.2
