@@ -50,10 +50,10 @@ function exhibit_core_get_users($role = NULL, $options = array()) {
 
     // Add profile fields if the module is enabled
     if (module_exists('profile')) {
-      $profile_result = db_query('SELECT f.title title, v.value value FROM {profile_values} v, {profile_fields} f WHERE v.fid = f.fid AND v.uid = %d AND f.visibility = 3', $user->uid);
+      $profile_result = db_query('SELECT f.name name, v.value value FROM {profile_values} v, {profile_fields} f WHERE v.fid = f.fid AND v.uid = %d AND f.visibility = 3', $user->uid);
       while ($row = db_fetch_array($profile_result)) {
-        if(!empty($row['title']) && !is_null($row['value'])) {
-          $item[$row['title']] = $row['value'];
+        if(!empty($row['name']) && !is_null($row['value'])) {
+          $item[$row['name']] = $row['value'];
         }
       }
     }

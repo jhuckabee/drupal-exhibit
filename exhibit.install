@@ -32,6 +32,19 @@ function exhibit_install() {
 }
 
 /**
+ * Update 1: Add facet definition to exhibit_nodes
+ */
+function exhibit_update_6100() {
+  db_add_field($ret, 'exhibit_nodes', 
+                      'facet_definition', 
+                      array(
+                        'type' => 'text', 
+                        'size' => 'big'
+                      )
+                );
+}
+
+/**
  * Implementation of hook_uninstall().
  */
 function exhibit_uninstall() {

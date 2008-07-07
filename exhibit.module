@@ -130,6 +130,28 @@ function exhibit_menu() {
 }
 
 /**
+ * Implementation of hook_block().
+ */
+function exhibit_block($op = 'list', $delta = 0, $edit = array()) {
+  switch ($op) {
+    case 'list':
+      $blocks[0]['info'] = t('Exhibit Facets');
+      return $blocks;
+    case 'view':
+      $block = exhibit_block_facets();
+      return $block;
+  }
+}
+
+function exhibit_block_facets(){
+  if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) != 'edit') { 
+    $node = node_load(arg(1));
+    $block['content'] = $node->exhibit['facet_definition'];
+    return $block;
+  }
+}
+
+/**
  * Implementation of hook_theme().
  */
 function exhibit_theme() {
@@ -197,7 +219,7 @@ function exhibit_validate(&$node) {}
  */
 function exhibit_insert($node) {
   $node->exhibit['feeds'] = implode(',', array_filter(array_values($node->exhibit['feeds']), 'trim'));
-  db_query("INSERT INTO {exhibit_nodes} (nid, vid, feeds, definition) VALUES (%d, %d, '%s', '%s')", $node->nid, $node->vid, $node->exhibit['feeds'], $node->exhibit['definition']);
+  db_query("INSERT INTO {exhibit_nodes} (nid, vid, feeds, definition, facet_definition) VALUES (%d, %d, '%s', '%s')", $node->nid, $node->vid, $node->exhibit['feeds'], $node->exhibit['definition'], $node->exhibit['facet_definition']);
 }
 
 /**
@@ -208,7 +230,7 @@ function exhibit_update($node) {
     return exhibit_insert($node);
   }
   $node->exhibit['feeds'] = implode(',', array_filter(array_values($node->exhibit['feeds']), 'trim'));
-  db_query("UPDATE {exhibit_nodes} SET feeds = '%s', definition = '%s' WHERE vid = %d", $node->exhibit['feeds'], $node->exhibit['definition'], $node->vid);
+  db_query("UPDATE {exhibit_nodes} SET feeds = '%s', definition = '%s', facet_definition = '%s' WHERE vid = %d", $node->exhibit['feeds'], $node->exhibit['definition'], $node->exhibit['facet_definition'], $node->vid);
 }
 
 /**
@@ -233,6 +255,9 @@ function exhibit_nodeapi(&$node, $op, $teaser, $page) {
  * Implementation of hook_form().
  */
 function exhibit_form(&$node, &$param) {
+  drupal_add_js(drupal_get_path('module', 'exhibit') .'/exhibit.js');
+  drupal_add_js(array('exhibit' => exhibit_get_feeds('url')), 'setting');
+  
   $type = node_get_types('type', $node);
 
   if ($type->has_title) {
@@ -251,8 +276,10 @@ function exhibit_form(&$node, &$param) {
   }
 
   $form['exhibit'] = array('#type' => 'fieldset', '#title' => t('Exhibit'), '#collapsible' => TRUE, '#collapsed' => FALSE, '#tree' => TRUE);
-  $form['exhibit']['feeds'] = array('#type' => 'checkboxes', '#title' => t('Data feeds'), '#default_value' => !empty($node->exhibit['feeds']) ? $node->exhibit['feeds'] : array(), '#options' => exhibit_get_feeds('title'));
+  $form['exhibit']['feeds'] = array('#type' => 'checkboxes', '#title' => t('Data feeds'), '#default_value' => !empty($node->exhibit['feeds']) ? $node->exhibit['feeds'] : array(), '#options' => exhibit_get_feeds('title'), '#attributes' => array('class' => 'exhibit-feed-checkbox'), '#prefix' => '<div id="feed-field-selection">', '#suffix' => '</div>');
   $form['exhibit']['definition'] = array('#type' => 'textarea', '#title' => t('Definition'), '#default_value' => @$node->exhibit['definition'], '#rows' => 10);
+  $form['exhibit']['facet_definition'] = array('#type' => 'textarea', '#title' => t('Facet Definition'), '#default_value' => @$node->exhibit['facet_definition'], '#rows' => 5);
+  $form['exhibit']['facet-generator-form-wrapper'] = array('#type' => 'fieldset', '#title' => t('Facet Generator'), '#collapsible' => TRUE, '#collapsed' => TRUE, '#tree' => TRUE, '#attributes' => array('id' => 'exhibit-facet-builder', 'style' => 'display:none;'), '#value' => '<div id="facet-generator-form"></div>');
 
   return $form;
 }
