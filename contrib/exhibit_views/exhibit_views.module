@@ -59,7 +59,7 @@ function exhibit_output_view($view_name) {
   // Allow the label field's name to be specified as a URL parameter,
   // auto-prepending the base table name if necessary
   $label_field = isset($_GET['label']) ? check_plain($_GET['label']) : NULL;
-  if (strpos($label_field, $view->base_table . '_') !== 0) {
+  if (strpos($label_field, $view->base_table . '_') != 0) {
     $label_field = $view->base_table . '_' . $label_field;
   }
 

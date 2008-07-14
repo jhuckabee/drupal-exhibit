@@ -219,7 +219,7 @@ function exhibit_validate(&$node) {}
  */
 function exhibit_insert($node) {
   $node->exhibit['feeds'] = implode(',', array_filter(array_values($node->exhibit['feeds']), 'trim'));
-  db_query("INSERT INTO {exhibit_nodes} (nid, vid, feeds, definition, facet_definition) VALUES (%d, %d, '%s', '%s')", $node->nid, $node->vid, $node->exhibit['feeds'], $node->exhibit['definition'], $node->exhibit['facet_definition']);
+  db_query("INSERT INTO {exhibit_nodes} (nid, vid, feeds, definition, facet_definition) VALUES (%d, %d, '%s', '%s', '%s')", $node->nid, $node->vid, $node->exhibit['feeds'], $node->exhibit['definition'], $node->exhibit['facet_definition']);
 }
 
 /**
