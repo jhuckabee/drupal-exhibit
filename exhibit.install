@@ -32,19 +32,6 @@ function exhibit_install() {
 }
 
 /**
- * Update 1: Add facet definition to exhibit_nodes
- */
-function exhibit_update_6100() {
-  db_add_field($ret, 'exhibit_nodes', 
-                      'facet_definition', 
-                      array(
-                        'type' => 'text', 
-                        'size' => 'big'
-                      )
-                );
-}
-
-/**
  * Implementation of hook_uninstall().
  */
 function exhibit_uninstall() {
@@ -135,8 +122,28 @@ function exhibit_schema() {
           'type' => 'text',
           'size' => 'big',
         ),
+        'facet_definition' => array(
+          'description' => t("The exhibit's facet definition."),
+          'type' => 'text', 
+          'size' => 'big',
+        ),
       ),
       'primary key' => array('nid', 'vid'),
     ),
   );
+}
+
+/**
+ * Adds a facet definition field to the {exhibit_nodes} table.
+ */
+function exhibit_update_6001() {
+  db_add_field($ret, 'exhibit_nodes',
+    'facet_definition', 
+    array(
+      'description' => t("The exhibit's facet definition."),
+      'type' => 'text', 
+      'size' => 'big',
+    )
+  );
+  return array();
 }
