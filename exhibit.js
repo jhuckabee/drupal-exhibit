@@ -298,7 +298,6 @@ Drupal.exhibit = function() {
       }
       
       for (option in selFacet.options) {
-        // alert(selFacet.options[option].choices === undefined);
         // select field
         if (selFacet.options[option].choices &&
              selFacet.options[option].choices.length) {
