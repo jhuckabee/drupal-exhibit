@@ -1,15 +1,8 @@
 <?php
 // $Id$
-/**
- * exhibit.module - Creates faceted visualizations of structured data.
- *
- * @author Arto Bendiken <http://bendiken.net/>
- * @copyright Copyright (c) 2007-2008 Arto Bendiken. All rights reserved.
- * @license GPL <http://creativecommons.org/licenses/GPL/2.0/>
- * @package exhibit.module
- */
 
 //////////////////////////////////////////////////////////////////////////////
+// Module settings
 
 define('EXHIBIT_DATE_FORMAT',   '%Y-%m-%dT%H:%M:%SZ');
 define('EXHIBIT_XMLNS_URL',     'http://simile.mit.edu/2006/11/exhibit#');
