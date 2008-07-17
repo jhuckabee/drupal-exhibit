@@ -116,7 +116,7 @@ function exhibit_schema() {
         ),
         'facet_definition' => array(
           'description' => t("The exhibit's facet definition."),
-          'type' => 'text', 
+          'type' => 'text',
           'size' => 'big',
         ),
       ),
@@ -130,10 +130,10 @@ function exhibit_schema() {
  */
 function exhibit_update_6001() {
   db_add_field($ret, 'exhibit_nodes',
-    'facet_definition', 
+    'facet_definition',
     array(
       'description' => t("The exhibit's facet definition."),
-      'type' => 'text', 
+      'type' => 'text',
       'size' => 'big',
     )
   );
