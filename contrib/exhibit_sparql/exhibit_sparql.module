@@ -1,14 +1,5 @@
 <?php
 // $Id$
-/**
- * exhibit_sparql.module - Provides Exhibit JSON data feeds of SPARQL queries.
- *
- * @author Arto Bendiken <http://bendiken.net/>
- * @copyright Copyright (c) 2007 Arto Bendiken. All rights reserved.
- * @license GPL <http://creativecommons.org/licenses/GPL/2.0/>
- * @package exhibit.module
- * @subpackage exhibit_sparql.module
- */
 
 //////////////////////////////////////////////////////////////////////////////
 // Core API hooks

@@ -1,3 +1,5 @@
+// $Id$
+
 /**
  * Enable auto facet generation based on fields in selected feeds in Exhibit node creation
  */
