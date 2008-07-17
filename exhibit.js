@@ -4,7 +4,6 @@
 Drupal.behaviors.exhibit = function(context) {
   
   Drupal.exhibit.buildForm();
-  
   // Loads all feeds, attaches change handler to feed checkboxes,
   // and initializes 
   Drupal.exhibit.loadFeeds(function(){
@@ -330,7 +329,7 @@ Drupal.exhibit = function() {
       for (var feed_id in Drupal.settings.exhibit) {
         feeds[feed_id] = {loaded: false, url: Drupal.settings.exhibit[feed_id], fields: []};
       }
-      
+
       for (feed_id in feeds){
         this.loadFeed(feeds[feed_id], callback);
       }
@@ -341,34 +340,39 @@ Drupal.exhibit = function() {
       var fieldType,
           that = this;
       
-      $.getJSON('/' + feed.url, function(data){                                           // Fetch the feed from its URL
-        if (data.items && data.items[0]) {                                                // Make sure the feed contains items
-          $.each(data.items, function(item){                                              // Loop through each item
-            $.each(data.items[item], function(i) {                                        // Loop through each field in the item
-              if ($.inArray(i, $.map(feed.fields, function(f){ return f.name;})) < 0) {   // Make sure the field doesn't already exist
-               if (data.properties && 
-                   data.properties[i] && 
-                   data.properties[i]['valueType']) {                                     // Check if item has a defined value type
-                fieldType = data.properties[i]['valueType'];                              // Use specified value type
-               }
-               else {
-                fieldType = 'item';                                                       // Use default 'item' value type
-               }
-               feed.fields.push({name: i, valueType: fieldType});                         // Add the field to the fields array
-              }
+      $.ajax({
+        type: "GET",
+        url: '/' + feed.url,
+        dataType: "json",
+        success: function(data) {
+          if (data.items && data.items[0]) {                                                // Make sure the feed contains items
+            $.each(data.items, function(item){                                              // Loop through each item
+              $.each(data.items[item], function(i) {                                        // Loop through each field in the item
+                if ($.inArray(i, $.map(feed.fields, function(f){ return f.name;})) < 0) {   // Make sure the field doesn't already exist
+                  if (data.properties && 
+                      data.properties[i] && 
+                      data.properties[i]['valueType']) {                                     // Check if item has a defined value type
+                        fieldType = data.properties[i]['valueType'];                              // Use specified value type
+                  }
+                  else {
+                    fieldType = 'item';                                                       // Use default 'item' value type
+                  }
+                  feed.fields.push({name: i, valueType: fieldType});                              // Add the field to the fields array
+                }
+              });
             });
-          });
-        }
-        
+          }
+        },
+        complete: function() {
+          feed.loaded = true;
 
-        feed.loaded = true;
-        
-        if (typeof callback === 'function' &&
-            that.allFeedsLoaded()) {
-              callback();
+          if (typeof callback === 'function' &&
+              that.allFeedsLoaded()) {
+                callback();
+          }
         }
-        
       });
+    
     },
     
     // Check if all feeds have been loaded
