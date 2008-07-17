@@ -1,13 +1,5 @@
 <?php
 // $Id$
-/**
- * exhibit.install - Module installation/uninstallation.
- *
- * @author Arto Bendiken <http://bendiken.net/>
- * @copyright Copyright (c) 2007-2008 Arto Bendiken. All rights reserved.
- * @license GPL <http://creativecommons.org/licenses/GPL/2.0/>
- * @package exhibit.module
- */
 
 //////////////////////////////////////////////////////////////////////////////
 // Core API hooks
@@ -29,19 +21,6 @@ function exhibit_install() {
   variable_set('node_options_exhibit', array('status'));
   // Default comment setting: Disabled
   variable_set('comment_exhibit', '0');
-}
-
-/**
- * Update 1: Add facet definition to exhibit_nodes
- */
-function exhibit_update_6100() {
-  db_add_field($ret, 'exhibit_nodes', 
-                      'facet_definition', 
-                      array(
-                        'type' => 'text', 
-                        'size' => 'big'
-                      )
-                );
 }
 
 /**
@@ -135,8 +114,28 @@ function exhibit_schema() {
           'type' => 'text',
           'size' => 'big',
         ),
+        'facet_definition' => array(
+          'description' => t("The exhibit's facet definition."),
+          'type' => 'text',
+          'size' => 'big',
+        ),
       ),
       'primary key' => array('nid', 'vid'),
     ),
   );
+}
+
+/**
+ * Adds a facet definition field to the {exhibit_nodes} table.
+ */
+function exhibit_update_6001() {
+  db_add_field($ret, 'exhibit_nodes',
+    'facet_definition',
+    array(
+      'description' => t("The exhibit's facet definition."),
+      'type' => 'text',
+      'size' => 'big',
+    )
+  );
+  return array();
 }

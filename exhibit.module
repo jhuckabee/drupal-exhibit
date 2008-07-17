@@ -1,15 +1,8 @@
 <?php
 // $Id$
-/**
- * exhibit.module - Creates faceted visualizations of structured data.
- *
- * @author Arto Bendiken <http://bendiken.net/>
- * @copyright Copyright (c) 2007-2008 Arto Bendiken. All rights reserved.
- * @license GPL <http://creativecommons.org/licenses/GPL/2.0/>
- * @package exhibit.module
- */
 
 //////////////////////////////////////////////////////////////////////////////
+// Module settings
 
 define('EXHIBIT_DATE_FORMAT',   '%Y-%m-%dT%H:%M:%SZ');
 define('EXHIBIT_XMLNS_URL',     'http://simile.mit.edu/2006/11/exhibit#');
@@ -135,19 +128,17 @@ function exhibit_menu() {
 function exhibit_block($op = 'list', $delta = 0, $edit = array()) {
   switch ($op) {
     case 'list':
-      $blocks[0]['info'] = t('Exhibit Facets');
-      return $blocks;
+      return array('facets' => array('info' => t('Exhibit facets')));
     case 'view':
-      $block = exhibit_block_facets();
+      switch ($delta) {
+        case 'facets':
+          if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) != 'edit') {
+            $node = node_load(arg(1));
+            $block['content'] = $node->exhibit['facet_definition'];
+          }
+          break;
+      }
       return $block;
-  }
-}
-
-function exhibit_block_facets(){
-  if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2) != 'edit') { 
-    $node = node_load(arg(1));
-    $block['content'] = $node->exhibit['facet_definition'];
-    return $block;
   }
 }
 
@@ -257,7 +248,7 @@ function exhibit_nodeapi(&$node, $op, $teaser, $page) {
 function exhibit_form(&$node, &$param) {
   drupal_add_js(drupal_get_path('module', 'exhibit') .'/exhibit.js');
   drupal_add_js(array('exhibit' => exhibit_get_feeds('url')), 'setting');
-  
+
   $type = node_get_types('type', $node);
 
   if ($type->has_title) {
@@ -278,7 +269,7 @@ function exhibit_form(&$node, &$param) {
   $form['exhibit'] = array('#type' => 'fieldset', '#title' => t('Exhibit'), '#collapsible' => TRUE, '#collapsed' => FALSE, '#tree' => TRUE);
   $form['exhibit']['feeds'] = array('#type' => 'checkboxes', '#title' => t('Data feeds'), '#default_value' => !empty($node->exhibit['feeds']) ? $node->exhibit['feeds'] : array(), '#options' => exhibit_get_feeds('title'), '#attributes' => array('class' => 'exhibit-feed-checkbox'), '#prefix' => '<div id="feed-field-selection">', '#suffix' => '</div>');
   $form['exhibit']['definition'] = array('#type' => 'textarea', '#title' => t('Definition'), '#default_value' => @$node->exhibit['definition'], '#rows' => 10);
-  $form['exhibit']['facet_definition'] = array('#type' => 'textarea', '#title' => t('Facet Definition'), '#default_value' => @$node->exhibit['facet_definition'], '#rows' => 5);
+  $form['exhibit']['facet_definition'] = array('#type' => 'textarea', '#title' => t('Facet definition'), '#default_value' => @$node->exhibit['facet_definition'], '#rows' => 5);
   $form['exhibit']['facet-generator-form-wrapper'] = array('#type' => 'fieldset', '#title' => t('Facet Generator'), '#collapsible' => TRUE, '#collapsed' => TRUE, '#tree' => TRUE, '#attributes' => array('id' => 'exhibit-facet-builder', 'style' => 'display:none;'), '#value' => '<div id="facet-generator-form"></div>');
 
   return $form;
