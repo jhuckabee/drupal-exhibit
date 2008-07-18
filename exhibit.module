@@ -349,7 +349,21 @@ function exhibit_exhibit_views() {
 // Exhibit API functions
 
 function exhibit_add_link($url) {
-  drupal_add_link(array('rel' => 'meta', 'type' => 'application/json', 'title' => 'Exhibit JSON', 'href' => url($url)));
+  drupal_add_link(array('rel' => 'meta', 'type' => 'application/json', 'title' => 'Exhibit JSON', 'href' => exhibit_get_url($url)));
+}
+
+function exhibit_get_url($url) {
+  if (exhibit_is_link_internal($url)) {
+    $url_parts = parse_url($url);
+    return url($url_parts['path'], array('query' => $url_parts['query']));
+  }
+  else {
+    return url($url, array('external' => TRUE));
+  }
+}
+
+function exhibit_is_link_internal($url) {
+  return ((!preg_match('!^[\w\d\+\-]+://!', $url)) ? TRUE: FALSE);
 }
 
 function exhibit_add_feed($url, $type = 'application/json') {
@@ -378,11 +392,11 @@ function exhibit_get_feeds($key = NULL) {
 
 function exhibit_get_feed_url($feed) {
   $feed = (object)$feed;
-  return url(!empty($feed->cache) ? 'exhibit/feeds/' . $feed->fid : $feed->url);
+  return exhibit_get_url(!empty($feed->cache) ? 'exhibit/feeds/' . $feed->fid : $feed->url);
 }
 
 function exhibit_get_feed_contents($url) {
-  if (!preg_match('!^[\w\d\+\-]+://!', $url)) {
+  if (exhibit_is_link_internal($url)) {
     // Internal Drupal path
     ob_start();
     $result = $url ? menu_execute_active_handler($url) : MENU_NOT_FOUND;

@@ -50,15 +50,19 @@ function exhibit_output_view($view_name) {
   // Allow the label field's name to be specified as a URL parameter,
   // auto-prepending the base table name if necessary
   $label_field = isset($_GET['label']) ? check_plain($_GET['label']) : NULL;
-  if (strpos($label_field, $view->base_table . '_') != 0) {
-    $label_field = $view->base_table . '_' . $label_field;
+  if (strpos($label_field, $view->base_table . '_') !== 0) {
+    if ($label_field != 'nid') {
+      $label_field = $view->base_table . '_' . $label_field;
+    }
   }
 
   // Convert the view's field definitions into Exhibit-compatible property
   // definitions as best we can
   $fields = $view->display['default']->display_options['fields'];
   foreach ($fields as $field_name => $field) {
-    $field_name = $field['table'] . '_' . $field_name;
+    if ($field_name != 'nid') {
+      $field_name = $field['table'] . '_' . $field_name;
+    }
     if (is_null($label_field)) {
       $label_field = $field_name;
     }
