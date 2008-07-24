@@ -50,9 +50,12 @@ field.
 Once your Exhibit definitions are complete, save the node, and you should have
 a fully functioning Exhibit rendered on the front end.
 
+
 CREDITS
 -------
 Developed and maintained by Arto Bendiken <http://bendiken.net/>
+Co-maintained by Josh Huckabee <http://joshhuckabee.com/>
+Co-maintained by Djun Kim <http://www.puregin.org/>
 Sponsored by MakaluMedia Group <http://www.makalumedia.com/>
 Sponsored by M.C. Dean, Inc. <http://www.mcdean.com/>
 Sponsored by SPAWAR <http://www.spawar.navy.mil/>
