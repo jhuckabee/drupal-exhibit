@@ -363,7 +363,7 @@ function exhibit_get_url($url) {
 }
 
 function exhibit_is_link_internal($url) {
-  return ((!preg_match('!^[\w\d\+\-]+://!', $url)) ? TRUE: FALSE);
+  return (bool)!preg_match('!^[\w\d\+\-]+://!', $url);
 }
 
 function exhibit_add_feed($url, $type = 'application/json') {
