@@ -1,5 +1,5 @@
 <?php
-// $Id$
+// $Id: exhibit_views.module,v 1.4 2008/07/24 13:16:13 arto Exp $
 
 //////////////////////////////////////////////////////////////////////////////
 // Core API hooks
@@ -46,31 +46,39 @@ function exhibit_output_view($view_name) {
   // TODO: would need some way to form the plural form of the type label?
   $view_data = views_fetch_data($view->base_table);
   $types[$view->base_table] = array('label' => $view_data['table']['base']['title']);
+  $base_field = $view_data['table']['base']['field'];
 
   // Allow the label field's name to be specified as a URL parameter,
   // auto-prepending the base table name if necessary
   $label_field = isset($_GET['label']) ? check_plain($_GET['label']) : NULL;
   if (strpos($label_field, $view->base_table . '_') !== 0) {
-    if ($label_field != 'nid') {
+    if ($label_field != $base_field) {
       $label_field = $view->base_table . '_' . $label_field;
     }
   }
+
+  // Execute the query for the view's default display
+  $view->execute_display('default');
 
   // Convert the view's field definitions into Exhibit-compatible property
   // definitions as best we can
   $fields = $view->display['default']->display_options['fields'];
   foreach ($fields as $field_name => $field) {
-    if ($field_name != 'nid') {
-      $field_name = $field['table'] . '_' . $field_name;
+    if ($field_name != $base_field) {
+      foreach($view->query->fields as $query_field) {
+        if ($query_field['field'] == $field_name && $query_field['field'] != $base_field) {
+          $props[$query_field['alias']] = array('label' => $field['label']);
+        }
+      }
+    }
+    else {
+      $props[$base_field] = array('label' => $field['label']);
     }
     if (is_null($label_field)) {
       $label_field = $field_name;
     }
-    $props[$field_name] = array('label' => $field['label']);
   }
 
-  // Execute the query for the view's default display
-  $view->execute_display('default');
 
   // If results were returned, assemble them into Exhibit-compatible items
   if (!empty($view->result)) {
@@ -78,9 +86,10 @@ function exhibit_output_view($view_name) {
       $item = array('type' => $view->base_table, 'label' => $row->$label_field);
 
       foreach ($fields as $field_name => $field) {
-        $field_name = $field['table'] . '_' . $field_name;
-        if (isset($row->$field_name)) {
-          $item[$field_name] = $row->$field_name;
+        foreach($view->query->fields as $query_field) {
+          if ($query_field['field'] == $field_name && isset($row->$query_field['alias'])) {
+            $item[$query_field['alias']] = $row->$query_field['alias'];
+          }
         }
       }
 
