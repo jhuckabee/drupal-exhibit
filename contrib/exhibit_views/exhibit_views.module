@@ -12,7 +12,7 @@ function exhibit_views_init() {
   if (user_access('access exhibits')) {
     if (($item = menu_get_item()) && $item['page_callback'] == 'views_page') {
       if ($view_name = $item['page_arguments'][0]) {
-        exhibit_add_link('exhibit/views/' . $view_name);
+        exhibit_add_link('exhibit/views/'. $view_name);
       }
     }
   }
@@ -51,9 +51,9 @@ function exhibit_output_view($view_name) {
   // Allow the label field's name to be specified as a URL parameter,
   // auto-prepending the base table name if necessary
   $label_field = isset($_GET['label']) ? check_plain($_GET['label']) : NULL;
-  if (strpos($label_field, $view->base_table . '_') !== 0) {
+  if (strpos($label_field, $view->base_table .'_') !== 0) {
     if ($label_field != $base_field) {
-      $label_field = $view->base_table . '_' . $label_field;
+      $label_field = $view->base_table .'_'. $label_field;
     }
   }
 
@@ -63,38 +63,60 @@ function exhibit_output_view($view_name) {
   // Convert the view's field definitions into Exhibit-compatible property
   // definitions as best we can
   $fields = $view->display['default']->display_options['fields'];
-  foreach ($fields as $field_name => $field) {
-    if ($field_name != $base_field) {
-      foreach($view->query->fields as $query_field) {
-        if ($query_field['field'] == $field_name && $query_field['field'] != $base_field) {
-          $props[$query_field['alias']] = array('label' => $field['label']);
-        }
+  foreach ($view->query->fields as $query_field_name => $query_field) {
+    if ($query_field_name != 'term_data_name' && $query_field_name != 'vocabulary_name') {
+      $props[$query_field_name] = array('label' => $fields[$query_field['field']]['label']);
+      if (is_null($label_field)) {
+        $label_field = $query_field_name;
       }
-    }
-    else {
-      $props[$base_field] = array('label' => $field['label']);
-    }
-    if (is_null($label_field)) {
-      $label_field = $field_name;
     }
   }
 
-
   // If results were returned, assemble them into Exhibit-compatible items
   if (!empty($view->result)) {
-    foreach ($view->result as $row) {
-      $item = array('type' => $view->base_table, 'label' => $row->$label_field);
+    // Set a base id so we can check for duplicate rows
+    // This is possible for nodes that have multiple taxonomy terms
+    $item = array();
+    $items = array();
+    $base_id = 0;
 
-      foreach ($fields as $field_name => $field) {
-        foreach($view->query->fields as $query_field) {
-          if ($query_field['field'] == $field_name && isset($row->$query_field['alias'])) {
-            $item[$query_field['alias']] = $row->$query_field['alias'];
-          }
+    foreach ($view->result as $row) {
+      // Check to see if we're on a new object
+      if ($base_id != $row->$base_field) {
+        // Add to the items collection as its not our first pass
+        if ($base_id != 0) {
+          $items[] = $item;
+        }
+        // Setup a new item
+        $item = array('type' => $view->base_table, 'label' => $row->$label_field);
+        // Capture the new base_id from the base field (nid, uid, etc)
+        $base_id = $row->$base_field;
+      }
+
+      foreach ($view->query->fields as $query_field_name => $query_field) {
+        // Add each of the fields values to the item array,
+        // we will handle taxonomy separately
+        if (isset($row->$query_field_name) &&
+              $query_field_name != 'term_data_name' &&
+              $query_field_name != 'vocabulary_name') {
+          $item[$query_field_name] = $row->$query_field_name;
         }
       }
 
-      $items[] = $item;
+      // Handle taxonomies
+      if (isset($row->term_data_name)) {
+        // Make sure we have our vocabularies in hand
+        if (!isset($vocabularies)) {
+          $vocabularies = taxonomy_get_vocabularies();
+        }
+        $vocab = $vocabularies[$row->term_data_vid];
+        if (!isset($props[$vocab->name])) {
+          $props[$vocabularies[$row->term_data_vid]->name] = array('label' => $vocab->name);
+        }
+        $item[$vocab->name][] = $row->term_data_name;
+      }
     }
+    $items[] = $item;
   }
 
   return exhibit_output('application/json', drupal_to_js(exhibit_json($items, $types, $props)));
