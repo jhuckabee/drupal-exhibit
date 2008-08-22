@@ -65,7 +65,17 @@ function exhibit_output_view($view_name) {
   $fields = $view->display['default']->display_options['fields'];
   foreach ($view->query->fields as $query_field_name => $query_field) {
     if ($query_field_name != 'term_data_name' && $query_field_name != 'vocabulary_name') {
-      $props[$query_field_name] = array('label' => $fields[$query_field['field']]['label']);
+      if ($fields[$query_field['field']]['label']) {
+       $props[$query_field_name] = array('label' => $fields[$query_field['field']]['label']);
+      }
+      if ($fields[$query_field['field']]['table'] == 'node_data_field_decimal' ||
+          $fields[$query_field['field']]['table'] == 'node_data_field_float' ||
+          $fields[$query_field['field']]['table'] == 'node_data_field_integer') {
+        $props[$query_field_name]['valueType'] = 'number';
+      }
+      if ($fields[$query_field['field']]['table'] == 'node_data_field_date') {
+        $props[$query_field_name]['valueType'] = 'date';
+      }
       if (is_null($label_field)) {
         $label_field = $query_field_name;
       }
