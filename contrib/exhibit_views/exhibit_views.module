@@ -140,7 +140,7 @@ function exhibit_output_view($view_name) {
         }
         $vocab = $vocabularies[$row->term_data_vid];
         if (!isset($props[$vocab->name])) {
-          $props[$vocabularies[$row->term_data_vid]->name] = array('label' => $vocab->name);
+          $props[$vocabularies[$vocab->name] = array('label' => $vocab->name);
         }
         $item[$vocab->name][] = $row->term_data_name;
       }
