@@ -1,5 +1,5 @@
 <?php
-// $Id$
+// $Id: exhibit_views.module,v 1.4 2008/07/24 13:16:13 arto Exp $
 
 //////////////////////////////////////////////////////////////////////////////
 // Core API hooks
@@ -58,26 +58,33 @@ function exhibit_output_view($view_name) {
   }
 
   // Execute the query for the view's default display
-  $view->execute_display('default');
+  // We must render the view here because multi-valued cck
+  // Fields are not populated during query execution, but are
+  // filled in during the pre_render process.
+  $view->render('default');
 
   // Convert the view's field definitions into Exhibit-compatible property
   // definitions as best we can
   $fields = $view->display['default']->display_options['fields'];
-  foreach ($view->query->fields as $query_field_name => $query_field) {
-    if ($query_field_name != 'term_data_name' && $query_field_name != 'vocabulary_name') {
-      if ($fields[$query_field['field']]['label']) {
-       $props[$query_field_name] = array('label' => $fields[$query_field['field']]['label']);
+
+  foreach ($fields as $query_field_name => $query_field) {
+    // Grab reference to field alias
+    $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
+
+    // Skip taxonomy fields, they will be handled later
+    if ($query_field['table'] != 'term_data') {
+      $props[$field_alias] = array('label' => $query_field['label']);
+      // Set numeric and date value types
+      if ($view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'number_decimal' ||
+          $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'number_float' ||
+          $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'number_integer') {
+        $props[$field_alias]['valueType'] = 'number';
       }
-      if ($fields[$query_field['field']]['table'] == 'node_data_field_decimal' ||
-          $fields[$query_field['field']]['table'] == 'node_data_field_float' ||
-          $fields[$query_field['field']]['table'] == 'node_data_field_integer') {
-        $props[$query_field_name]['valueType'] = 'number';
-      }
-      if ($fields[$query_field['field']]['table'] == 'node_data_field_date') {
-        $props[$query_field_name]['valueType'] = 'date';
+      if ($view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'date') {
+        $props[$field_alias]['valueType'] = 'date';
       }
       if (is_null($label_field)) {
-        $label_field = $query_field_name;
+        $label_field = $field_alias;
       }
     }
   }
@@ -103,13 +110,28 @@ function exhibit_output_view($view_name) {
         $base_id = $row->$base_field;
       }
 
-      foreach ($view->query->fields as $query_field_name => $query_field) {
+      foreach ($fields as $query_field_name => $query_field) {
+        // Grab reference to field alias
+        $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
+
         // Add each of the fields values to the item array,
         // we will handle taxonomy separately
-        if (isset($row->$query_field_name) &&
+        // Handle multiple valued fields first
+        if (!$item[$query_field_name] &&
+            $fields[$query_field_name]['multiple'] &&
+            $view->display['default']->handler->handlers['field'][$query_field_name] &&
+            $view->display['default']->handler->handlers['field'][$query_field_name]->field_values &&
+            $view->display['default']->handler->handlers['field'][$query_field_name]->field_values[$base_id]) {
+          foreach($view->display['default']->handler->handlers['field'][$query_field_name]->field_values[$base_id] as $multi_value) {
+            if ($multi_value['value']) {
+              $item[$query_field_name][] = $multi_value['value'];
+            }
+          }
+        }
+        else if (isset($row->$field_alias) &&
               $query_field_name != 'term_data_name' &&
               $query_field_name != 'vocabulary_name') {
-          $item[$query_field_name] = $row->$query_field_name;
+          $item[$field_alias] = $row->$field_alias;
         }
       }
 
