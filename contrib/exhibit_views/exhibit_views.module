@@ -126,8 +126,8 @@ function exhibit_output_view($view_name) {
           }
         }
         else if (isset($row->$field_alias) &&
-              $query_field_name != 'term_data_name' &&
-              $query_field_name != 'vocabulary_name') {
+              $field_alias != 'term_data_name' &&
+              $field_alias != 'vocabulary_name') {
           $item[$field_alias] = $row->$field_alias;
         }
       }
