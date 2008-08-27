@@ -26,6 +26,7 @@ function exhibit_views_menu() {
  * Implementation of hook_views_pre_view().
  */
 function exhibit_views_views_pre_view(&$view, $display_id, $args) {
+  // Add Exhibit JSON autodiscovery link to Views pages
   if (user_access('access exhibits')) {
     exhibit_add_link('exhibit/views/'. $view->name);
   }
