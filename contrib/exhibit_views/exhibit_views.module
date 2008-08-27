@@ -1,22 +1,8 @@
 <?php
-// $Id$
+// $Id: exhibit_views.module,v 1.4 2008/07/24 13:16:13 arto Exp $
 
 //////////////////////////////////////////////////////////////////////////////
 // Core API hooks
-
-/**
- * Implementation of hook_init().
- */
-function exhibit_views_init() {
-  // Add Exhibit JSON autodiscovery link to Views pages
-  if (user_access('access exhibits')) {
-    if (($item = menu_get_item()) && $item['page_callback'] == 'views_page') {
-      if ($view_name = $item['page_arguments'][0]) {
-        exhibit_add_link('exhibit/views/'. $view_name);
-      }
-    }
-  }
-}
 
 /**
  * Implementation of hook_menu().
@@ -31,6 +17,18 @@ function exhibit_views_menu() {
       'file' => '../../exhibit.pages.inc',
     ),
   );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Views API hooks
+
+/**
+ * Implementation of hook_views_pre_view().
+ */
+function exhibit_views_views_pre_view(&$view, $display_id, $args) {
+  if (user_access('access exhibits')) {
+    exhibit_add_link('exhibit/views/'. $view->name);
+  }
 }
 
 //////////////////////////////////////////////////////////////////////////////
