@@ -68,7 +68,7 @@ function exhibit_output_view($view_name) {
     $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
 
     // Skip taxonomy fields, they will be handled later
-    if ($query_field['table'] != 'term_data') {
+    if ($query_field['table'] != 'term_data' || $query_field['table'] != 'term_node') {
       $props[$field_alias] = array('label' => $query_field['label']);
       // Set numeric and date value types
       if ($view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'number_decimal' ||
@@ -126,12 +126,14 @@ function exhibit_output_view($view_name) {
         }
         else if (isset($row->$field_alias) &&
               $field_alias != 'term_data_name' &&
-              $field_alias != 'vocabulary_name') {
+              $field_alias != 'vocabulary_name' &&
+              $field_alias != 'node_vid') {
           $item[$field_alias] = $row->$field_alias;
         }
       }
 
       // Handle taxonomies
+      // This handles "Taxonomy: Term" form of taxnomies in views
       if (isset($row->term_data_name)) {
         // Make sure we have our vocabularies in hand
         if (!isset($vocabularies)) {
@@ -142,6 +144,35 @@ function exhibit_output_view($view_name) {
           $props[$vocab->name] = array('label' => $vocab->name);
         }
         $item[$vocab->name][] = $row->term_data_name;
+      }
+
+      // This handles "Taxonomy: All Terms" form of taxonomies in views
+      if (!isset($row->term_data_name) &&  // Terms already being handled by Taxonomy: Term above
+          isset($row->node_vid) &&
+          $item_terms = $view->display['default']->handler->handlers['field']['tid']->items[$row->node_vid]) {
+
+        // Term storage array, so we don't have to keep making trips to the db
+        $terms = array();
+
+        // Make sure we have our vocabularies in hand
+        if (!isset($vocabularies)) {
+          $vocabularies = taxonomy_get_vocabularies();
+        }
+
+        // Cycle through all terms in this item
+        // Assign term to proper field based on vocab
+        foreach ($item_terms as $tid => $item_term) {
+          if (!isset($terms[$tid])) {
+            $terms[$tid] = taxonomy_get_term($tid);
+          }
+          $vocab = $vocabularies[$terms[$tid]->vid];
+          if (!isset($props[$vocab->name])) {
+            $props[$vocab->name] = array('label' => $vocab->name);
+          }
+          if (!in_array($terms[$tid]->name, $item[$vocab->name])) {
+            $item[$vocab->name][] = $terms[$tid]->name;
+          }
+        }
       }
     }
     $items[] = $item;
