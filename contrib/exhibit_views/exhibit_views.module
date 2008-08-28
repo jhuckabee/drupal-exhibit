@@ -65,7 +65,11 @@ function exhibit_output_view($view_name) {
 
   foreach ($fields as $query_field_name => $query_field) {
     // Grab reference to field alias
-    $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
+    // print_r($query_field_name . '<br/>');
+    // print_r($view->display['default']->handler->handlers['field'][$query_field_name]->aliases);
+    if (!$field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->aliases[$query_field_name]) {
+      $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
+    }
 
     // Skip taxonomy fields, they will be handled later
     if ($query_field['table'] != 'term_data' || $query_field['table'] != 'term_node') {
@@ -76,7 +80,9 @@ function exhibit_output_view($view_name) {
           $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'number_integer') {
         $props[$field_alias]['valueType'] = 'number';
       }
-      if ($view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'date') {
+      if ($view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'date' ||
+          $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'datestamp' ||
+          $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'datetime') {
         $props[$field_alias]['valueType'] = 'date';
       }
       if (is_null($label_field)) {
@@ -108,7 +114,9 @@ function exhibit_output_view($view_name) {
 
       foreach ($fields as $query_field_name => $query_field) {
         // Grab reference to field alias
-        $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
+         if (!$field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->aliases[$query_field_name]) {
+            $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
+          }
 
         // Add each of the fields values to the item array,
         // we will handle taxonomy separately
@@ -128,7 +136,16 @@ function exhibit_output_view($view_name) {
               $field_alias != 'term_data_name' &&
               $field_alias != 'vocabulary_name' &&
               $field_alias != 'node_vid') {
-          $item[$field_alias] = $row->$field_alias;
+          // We need to convert UNIX timestamp values into valid Exhibit (ISO 8601) Dates
+          if (($view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'date' ||
+              $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'datestamp' ||
+              $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'datetime') &&
+              is_numeric($row->$field_alias)) {
+            $item[$field_alias] = format_date($row->$field_alias, 'custom', "Y-m-d\TH:i:s");
+          }
+          else {
+            $item[$field_alias] = $row->$field_alias;
+          }
         }
       }
 
