@@ -65,8 +65,6 @@ function exhibit_output_view($view_name) {
 
   foreach ($fields as $query_field_name => $query_field) {
     // Grab reference to field alias
-    // print_r($query_field_name . '<br/>');
-    // print_r($view->display['default']->handler->handlers['field'][$query_field_name]->aliases);
     if (!$field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->aliases[$query_field_name]) {
       $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
     }
