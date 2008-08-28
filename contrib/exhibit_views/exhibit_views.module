@@ -169,9 +169,7 @@ function exhibit_output_view($view_name) {
           if (!isset($props[$vocab->name])) {
             $props[$vocab->name] = array('label' => $vocab->name);
           }
-          if (!in_array($terms[$tid]->name, $item[$vocab->name])) {
-            $item[$vocab->name][] = $terms[$tid]->name;
-          }
+          $item[$vocab->name][] = $terms[$tid]->name;
         }
       }
     }
