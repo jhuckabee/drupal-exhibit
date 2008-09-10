@@ -56,8 +56,11 @@ function exhibit_output_view($view_name) {
     }
   }
 
+  // Look for view args in $_GET['args']
+  $args = isset($_GET['args']) ? explode(':', $_GET['args']) : array();
+
   // Execute the query for the view's default display
-  $view->execute_display('default');
+  $view->execute_display('default', $args);
 
   // Convert the view's field definitions into Exhibit-compatible property
   // definitions as best we can
