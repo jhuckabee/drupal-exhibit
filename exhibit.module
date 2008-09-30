@@ -361,15 +361,15 @@ function exhibit_get_url($url) {
       if ($url_parts['query']) {
         $query_parts = explode('&', $url_parts['query']);
         // Check for 'args' in query already
-        foreach($query_parts as $idx => $part) {
+        foreach ($query_parts as $idx => $part) {
           if (preg_match('/^args/', $part)) {
             $arg_exists = TRUE;
-            $query_parts[$idx] .= ',' . $_GET['args'];
+            $query_parts[$idx] .= ','. $_GET['args'];
           }
         }
         if (!$arg_exists) {
           // 'args' wasn't found in query, so add it
-          $url_parts['query'] .= '&args=' . $_GET['args'];
+          $url_parts['query'] .= '&args='. $_GET['args'];
         }
         else {
           // 'args' was updated, so join the parts back together
@@ -378,7 +378,7 @@ function exhibit_get_url($url) {
       }
       else {
         // No query params portion of the url, so add it
-        $url_parts['query'] = 'args=' . $_GET['args'];
+        $url_parts['query'] = 'args='. $_GET['args'];
       }
     }
     return url($url_parts['path'], array('query' => $url_parts['query']));
