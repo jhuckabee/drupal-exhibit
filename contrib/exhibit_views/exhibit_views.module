@@ -67,22 +67,27 @@ function exhibit_output_view($view_name) {
   $fields = $view->display['default']->display_options['fields'];
 
   foreach ($fields as $query_field_name => $query_field) {
+    // Grab reference to field alias
+    if (!$field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->aliases[$query_field_name]) {
+      $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
+    }
+    
     // Skip taxonomy fields, they will be handled later
     if ($query_field['table'] != 'term_data' || $query_field['table'] != 'term_node') {
-      $props[$query_field_name] = array('label' => $query_field['label']);
+      $props[$field_alias] = array('label' => $query_field['label']);
       // Set numeric and date value types
       if ($view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'number_decimal' ||
           $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'number_float' ||
           $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'number_integer') {
-        $props[$query_field_name]['valueType'] = 'number';
+        $props[$field_alias]['valueType'] = 'number';
       }
       if ($view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'date' ||
           $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'datestamp' ||
           $view->display['default']->handler->handlers['field'][$query_field_name]->content_field['type'] == 'datetime') {
-        $props[$query_field_name]['valueType'] = 'date';
+        $props[$field_alias]['valueType'] = 'date';
       }
       if (is_null($label_field)) {
-        $label_field = $query_field_name;
+        $label_field = $field_alias;
       }
     }
   }
