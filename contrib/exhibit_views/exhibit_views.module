@@ -68,7 +68,12 @@ function exhibit_output_view($view_name) {
 
   foreach ($fields as $query_field_name => $query_field) {
     // Grab reference to field alias
-    if (!$field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->aliases[$query_field_name]) {
+    if ($query_field['multiple'] &&
+        $view->display['default']->handler->handlers['field'][$query_field_name] &&
+        $view->display['default']->handler->handlers['field'][$query_field_name]->field_values) {
+      $field_alias = $query_field_name;
+    }
+    else if (!$field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->aliases[$query_field_name]) {
       $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
     }
     
@@ -91,7 +96,6 @@ function exhibit_output_view($view_name) {
       }
     }
   }
-
 
   // If results were returned, assemble them into Exhibit-compatible items
   if (!empty($view->result)) {
@@ -116,19 +120,19 @@ function exhibit_output_view($view_name) {
 
       foreach ($fields as $query_field_name => $query_field) {
         // Grab reference to field alias
-         if (!$field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->aliases[$query_field_name]) {
-            $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
-          }
+        if (!$field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->aliases[$query_field_name]) {
+          $field_alias = $view->display['default']->handler->handlers['field'][$query_field_name]->field_alias;
+        }
 
         // Add each of the fields values to the item array,
         // we will handle taxonomy separately
         // Handle multiple valued fields first
         if (!$item[$query_field_name] &&
-            $fields[$query_field_name]['multiple'] &&
-            $view->display['default']->handler->handlers['field'][$query_field_name] &&
-            $view->display['default']->handler->handlers['field'][$query_field_name]->field_values &&
-            $view->display['default']->handler->handlers['field'][$query_field_name]->field_values[$base_id]) {
-          foreach($view->display['default']->handler->handlers['field'][$query_field_name]->field_values[$base_id] as $multi_value) {
+              $fields[$query_field_name]['multiple'] &&
+              $view->display['default']->handler->handlers['field'][$query_field_name] &&
+              $view->display['default']->handler->handlers['field'][$query_field_name]->field_values &&
+              $view->display['default']->handler->handlers['field'][$query_field_name]->field_values[$row->$field_alias]) {
+          foreach($view->display['default']->handler->handlers['field'][$query_field_name]->field_values[$row->$field_alias] as $idx => $multi_value) {
             if ($multi_value['value']) {
               $item[$query_field_name][] = $multi_value['value'];
             }
