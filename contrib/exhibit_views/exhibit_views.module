@@ -1,5 +1,5 @@
 <?php
-// $Id$
+// $Id: exhibit_views.module,v 1.4 2008/07/24 13:16:13 arto Exp $
 
 //////////////////////////////////////////////////////////////////////////////
 // Core API hooks
@@ -170,9 +170,19 @@ function exhibit_output_view($view_name) {
       }
 
       // This handles "Taxonomy: All Terms" form of taxonomies in views
+      // Determine vid field name
+      $row_relationship = 'node_vid';
+      if (!isset($row->$row_relationship)) {
+        foreach($view->query->relationships as $relationship_name => $relationship_data) {
+          $test_relationship = $relationship_name .'_vid';
+          if (isset($row->$test_relationship)) {
+            $row_relationship = $test_relationship;
+          }
+        }
+      }
       if (!isset($row->term_data_name) &&  // Terms already being handled by Taxonomy: Term above
-          isset($row->node_vid) &&
-          $item_terms = $view->display['default']->handler->handlers['field']['tid']->items[$row->node_vid]) {
+          isset($row->$row_relationship) &&
+          $item_terms = $view->display['default']->handler->handlers['field']['tid']->items[$row->$row_relationship]) {
 
         // Term storage array, so we don't have to keep making trips to the db
         $terms = array();
