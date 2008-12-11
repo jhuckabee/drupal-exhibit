@@ -1,4 +1,4 @@
-; $Id: exhibit_sparql.info,v 1.2 2008/07/17 11:51:07 arto Exp $
+; $Id$
 name = Exhibit SPARQL
 description = Provides Exhibit JSON data feeds of SPARQL query results.
 package = SIMILE
