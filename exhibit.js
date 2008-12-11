@@ -1,4 +1,4 @@
-// $Id$
+// $Id: exhibit.js,v 1.2 2008/07/24 13:16:13 arto Exp $
 
 /**
  * Enable auto facet generation based on fields in selected feeds in Exhibit node creation

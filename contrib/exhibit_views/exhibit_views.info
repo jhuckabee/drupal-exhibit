@@ -1,8 +1,0 @@
-; $Id$
-name = Exhibit Views
-description = Provides Exhibit JSON data feeds of Views queries.
-package = SIMILE
-dependencies[] = exhibit
-dependencies[] = views
-core = 6.x
-php = 5.2

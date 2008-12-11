@@ -1,5 +1,5 @@
 <?php
-// $Id$
+// $Id: exhibit.module,v 1.5 2008/07/24 13:16:13 arto Exp $
 
 //////////////////////////////////////////////////////////////////////////////
 // Module settings
@@ -303,6 +303,19 @@ function exhibit_view($node, $teaser = FALSE, $page = FALSE) {
 }
 
 //////////////////////////////////////////////////////////////////////////////
+// Views API hooks
+
+/**
+ * Implementation of hook_views_api().
+ */
+function exhibit_views_api() {
+  return array(
+    'api'  => 2,
+    'path' => drupal_get_path('module', 'exhibit'),
+  );
+}
+
+//////////////////////////////////////////////////////////////////////////////
 // Exhibit API hooks
 
 /**
@@ -356,32 +369,15 @@ function exhibit_get_url($url) {
   if (exhibit_is_link_internal($url)) {
     $url_parts = parse_url($url);
     // Handle views args
-    if (isset($_GET['args']) && is_numeric($_GET['args'])) {
-      // Tack on to existing query if it exists
-      if ($url_parts['query']) {
-        $query_parts = explode('&', $url_parts['query']);
-        // Check for 'args' in query already
-        foreach ($query_parts as $idx => $part) {
-          if (preg_match('/^args/', $part)) {
-            $arg_exists = TRUE;
-            $query_parts[$idx] .= ','. $_GET['args'];
-          }
-        }
-        if (!$arg_exists) {
-          // 'args' wasn't found in query, so add it
-          $url_parts['query'] .= '&args='. $_GET['args'];
-        }
-        else {
-          // 'args' was updated, so join the parts back together
-          $url_parts['query'] = implode('&', $query_parts);
-        }
-      }
-      else {
-        // No query params portion of the url, so add it
-        $url_parts['query'] = 'args='. $_GET['args'];
-      }
+    if (isset($_GET['args'])) {
+      $url_parts['path'] = preg_replace('/\/$/', '', $url_parts['path']) . '/' . $_GET['args'];
     }
-    return url($url_parts['path'], array('query' => $url_parts['query']));
+    if (empty($url_parts['query'])) {
+      return url($url_parts['path']);
+    }
+    else {
+      return url($url_parts['path'], array('query' => $url_parts['query']));
+    }
   }
   else {
     return url($url, array('external' => TRUE));

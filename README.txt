@@ -1,4 +1,4 @@
-// $Id$
+// $Id: README.txt,v 1.5 2008/07/24 13:16:13 arto Exp $
 
 Exhibit for Drupal
 ==================

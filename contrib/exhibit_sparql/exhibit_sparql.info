@@ -1,4 +1,4 @@
-; $Id$
+; $Id: exhibit_sparql.info,v 1.2 2008/07/17 11:51:07 arto Exp $
 name = Exhibit SPARQL
 description = Provides Exhibit JSON data feeds of SPARQL query results.
 package = SIMILE
@@ -6,3 +6,10 @@ dependencies[] = exhibit
 dependencies[] = sparql
 core = 6.x
 php = 5.2
+
+; Information added by drupal.org packaging script on 2008-06-02
+version = "6.x-1.0-alpha1"
+core = "6.x"
+project = "exhibit"
+datestamp = "1212404706"
+
