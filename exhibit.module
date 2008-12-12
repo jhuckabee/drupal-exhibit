@@ -400,7 +400,38 @@ function exhibit_add_feed($url, $type = 'application/json') {
 }
 
 function exhibit_feed_load($fid) {
-  return db_fetch_array(db_query('SELECT f.* FROM {exhibit_feeds} f WHERE f.fid = %d', $fid));
+  if (is_numeric($fid)) {
+    return db_fetch_array(db_query('SELECT f.* FROM {exhibit_feeds} f WHERE f.fid = %d', $fid));
+  }
+  else {
+    if (module_exists('views')) {
+      $views = views_get_all_views();
+      foreach ($views as $view) {
+        // Skip disabled views or broken views
+        if (!empty($view->disabled) || empty($view->display)) {
+          continue;
+        }
+
+        // Check each display, add those using the Exhibit JSON style plugin
+        foreach (array_keys($view->display) as $id) {
+          $plugin = views_fetch_plugin_data('display', $view->display[$id]->display_plugin);
+          $display_options = $view->display[$id]->display_options;
+          if ($plugin['handler'] == 'views_plugin_display_feed' && $display_options['style_plugin'] == 'exhibit_json') {
+            $view_feed_id = $view->vid . '_' . $id;
+            if ($view_feed_id == $fid) {
+              return array('fid' => $view_feed_id,
+                            'module' => 'views',
+                            'title' => $view->name . ': ' . $view->display[$id]->display_title,
+                            'enabled' => TRUE,
+                            'cache' => FALSE,
+                            'type' => 'application/json',
+                            'url' => $display_options['path']);
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 function exhibit_get_feeds($key = NULL) {
@@ -409,6 +440,61 @@ function exhibit_get_feeds($key = NULL) {
   while ($feed = db_fetch_object($result)) {
     $feeds[$feed->fid] = $key ? $feed->$key : $feed;
   }
+
+  // Check for Exhibit JSON feeds in views and add automaticall add them to the list
+  if (module_exists('views')) {
+    $views = views_get_all_views();
+    foreach ($views as $view) {
+      // Skip disabled views or broken views
+      if (!empty($view->disabled) || empty($view->display)) {
+        continue;
+      }
+
+      // Check each display, add those using the Exhibit JSON style plugin
+      foreach (array_keys($view->display) as $id) {
+        $plugin = views_fetch_plugin_data('display', $view->display[$id]->display_plugin);
+        $display_options = $view->display[$id]->display_options;
+        if ($plugin['handler'] == 'views_plugin_display_feed' && $display_options['style_plugin'] == 'exhibit_json') {
+          $view_feed_id = $view->vid . '_' . $id;
+          if ($key) {
+            switch ($key) {
+              case 'fid':
+                $feeds[$view_feed_id] = $view_feed_id;
+                break;
+              case 'module':
+                $feeds[$view_feed_id] = 'views';
+                break;
+              case 'title':
+                $feeds[$view_feed_id] = l($view->name . ': ' . $view->display[$id]->display_title, 'admin/build/views/edit/' . $view->name);
+                break;
+              case 'enabled':
+                $feeds[$view_feed_id] = TRUE;
+                break;
+              case 'cache':
+                $feeds[$view_feed_id] = FALSE;
+                break;
+              case 'type':
+                $feeds[$view_feed_id] = 'application/json';
+                break;
+              case 'url':
+                $feeds[$view_feed_id] = $display_options['path'];
+                break;
+            }
+          }
+          else {
+            $feeds[$view_feed_id] = (object)array('fid' => $view_feed_id,
+                                                  'module' => 'views',
+                                                  'title' => l($view->name . ': ' . $view->display[$id]->display_title, 'admin/build/views/edit/' . $view->name),
+                                                  'enabled' => TRUE,
+                                                  'cache' => FALSE,
+                                                  'type' => 'application/json',
+                                                  'url' => $display_options['path']);
+          }
+        }
+      }
+    }
+  }
+
   return $feeds;
 }
 

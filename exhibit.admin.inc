@@ -62,13 +62,13 @@ function exhibit_admin_feeds() {
     $url_parts = (exhibit_is_link_internal($feed->url) ? parse_url($feed->url) : NULL);
 
     $rows[] = array(
-      check_plain($feed->title),
+      is_numeric($feed->fid) ? check_plain($feed->title) : $feed->title,
       check_plain(isset($types[$feed->type]) ? $types[$feed->type] : $feed->type),
       (!is_null($url_parts) ?
         l(truncate_utf8($feed->url, 56, TRUE, TRUE), $url_parts['path'], array('query' => $url_parts['query'])) :
         l(truncate_utf8($feed->url, 56, TRUE, TRUE), $feed->url)),
-      l(t('edit'), 'admin/content/exhibit/edit/' . $feed->fid),
-      l(t('delete'), 'admin/content/exhibit/delete/' . $feed->fid),
+      is_numeric($feed->fid) ? l(t('edit'), 'admin/content/exhibit/edit/' . $feed->fid) : '',
+      is_numeric($feed->fid) ? l(t('delete'), 'admin/content/exhibit/delete/' . $feed->fid) : '',
     );
   }
 
