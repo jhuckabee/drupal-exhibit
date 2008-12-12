@@ -67,42 +67,62 @@ module:
 
      ...and/or collaborate with the author of this Drupal module to build a
      snazzy, user-friendly UI for generating exhibit definitions.
-
-
+     
 EXHIBIT VIEWS
 -------------
-This module includes a module called 'Exhibit Views' that generates
-Exhibit-compatible JSON data feeds of views defined using the Views module,
+This module includes a module called 'Exhibit Views' that allows you to
+add Exhibit-compatible JSON data feeds to views defined using the Views module,
 available from:
 
   <http://drupal.org/project/views>
 
   1. Install and enable the two included modules 'Exhibit' and
-     'Exhibit Views'.
+    'Exhibit Views'.
 
-  2. For any views you wish to utilize in exhibits, create data feeds with
-     URLs of the following form:
+  2. For any views you wish to utilize in exhibits, add a Feed display to the 
+    view by browsing to the view editor at:
 
-       exhibit/views/<NAME>
+      admin/build/views/<VIEW NAME>
 
-     Replace <NAME> with the unique view name of the view in question, e.g.
-     'tracker'.
+    Replace <NAME> with the unique view name of the view in question, e.g.
+    'tracker'.  You can also browse for your view at:
 
-  3. The JSON feed will, by default, utilize the first view field as the
-     data items' label (the presence of a special label field is required by
-     Exhibit). To use another field, you can manually specify an additional
-     'label' query parameter in the data feed's URL as follows:
+      admin/build/views
 
-       exhibit/views/<NAME>?label=<LABEL_FIELD>
+  3. In the display list, select "Feed" from the drop down list and then click
+    on the "Add display" button.  Assign the feed an appropriate name (e.g. 
+    "Exhibit Feed"). Set the style to "Exhibit JSON" by click on the link
+    next to the "Style" label under the "Basic Settings" section.  After you
+    select Exhibit JSON, click on the "update" button.  You will be presented
+    with some options for the item type label and item type plural label.
+    These are used in the Exhibit feeds, and Exhibit itself, to describe the
+    types of items in your list.  So, if your displaying a list of Event node
+    types, use event and events for the type label and plural type label.
+    Click on the update button to save your settings.
 
-     Replace <LABEL_FIELD> with the internal field name, e.g.  'name'. It
-     is recommended you specify the full table-qualified name, such as
-     'users_name', if you know it; however, in most cases that are
-     unambiguous, the field name itself without the table-qualifier prefix,
-     such as 'name', will probably do fine.
+    Once you've selected the correct display style, click on the link next to
+    the "Row style" plugin, also found under the "Basic Settings" section
+    right below the Style settings.  Select the "Fields (Exhibit)" option and
+    then click on the update button.
 
-     Utilizing this option may require some familiarity with Views internals
-     as Views does not expose the required internal field name in its
-     administrative interface. In general, though, you may be able to either
-     guess the internal name (e.g. 'User: E-mail' has the internal name
-     'mail') or determine it by examining the JSON output.
+    Finally, assign a path that you would like this feed to be accessible
+    through under the "Feed Settings" and save your view.
+
+    It should be noted, that Exhibit expects dates to be in ISO 8601 format.
+    For each date or datetime field in your view that you want accessible
+    within your Exhibits, you must override the format settings to
+    "Y-m-d\TH:i:s". To do this, make sure the Exhibit feed display is
+    selected, click on the date field you wish to override, and you will be
+    presented with the field options.  Click on the "Override" button in the
+    upper right hand corner of the settings form, choose "Custom" from the
+    "Date format" field and enter "Y-m-d\TH:i:s" without quotes into the
+    Custom date format field. You can use this override function for other
+    fields to if you want a different label or settings specifically for the
+    Exhibit JSON feed.
+
+    Now that your View Exhibit feed is configured, you should be able to
+    create or edit and Exhibit node and see this feed in the list.  The feed
+    will be name with the format "view name: display title".  If your view was
+    "Events" and you named the Exhibit feed display "Exhibit JSON", you would
+    see "Events: Exhibit JSON" in the list of available Exhibit feeds.  Feeds
+    titles from Views2 will link to their corresponding views.
