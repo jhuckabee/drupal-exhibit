@@ -44,6 +44,10 @@ class views_plugin_row_fields_exhibit extends views_plugin_row {
     return $output;
   }
 
+  function _cck_date_render($field, $values) {
+    return format_date(strtotime($values->{$field->field_alias}), 'custom', "Y-m-d\TH:i:s");
+  }
+
   function _list_render($field, $values) {
     $fid = $values->{$field->field_alias};
     if (!empty($field->items[$fid])) {
