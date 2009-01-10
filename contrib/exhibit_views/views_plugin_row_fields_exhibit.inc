@@ -44,9 +44,6 @@ class views_plugin_row_fields_exhibit extends views_plugin_row {
     return $output;
   }
 
-    return $output;
-  }
-
   function _list_render($field, $values) {
     $fid = $values->{$field->field_alias};
     if (!empty($field->items[$fid])) {
