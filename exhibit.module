@@ -370,7 +370,7 @@ function exhibit_get_url($url) {
     $url_parts = parse_url($url);
     // Handle views args
     if (isset($_GET['args'])) {
-      $url_parts['path'] = preg_replace('/\/$/', '', $url_parts['path']) . '/' . $_GET['args'];
+      $url_parts['path'] = preg_replace('/\%/', $_GET['args'], $url_parts['path']);
     }
     if (empty($url_parts['query'])) {
       return url($url_parts['path']);
