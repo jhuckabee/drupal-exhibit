@@ -4,11 +4,17 @@
 //////////////////////////////////////////////////////////////////////////////
 // Module settings
 
-define('EXHIBIT_DATE_FORMAT',   '%Y-%m-%dT%H:%M:%SZ');
-define('EXHIBIT_XMLNS_URL',     'http://simile.mit.edu/2006/11/exhibit#');
-define('EXHIBIT_JS_URL',        variable_get('exhibit_js_url', 'http://static.simile.mit.edu/exhibit/api-2.0/exhibit-api.js'));
-define('EXHIBIT_FEED_LIFETIME', (int)variable_get('timeline_feed_lifetime', 0));
-define('EXHIBIT_FEED_ETAG',     (bool)variable_get('timeline_feed_etag', TRUE));
+define('EXHIBIT_DATE_FORMAT',        '%Y-%m-%dT%H:%M:%SZ');
+define('EXHIBIT_XMLNS_URL',          'http://simile.mit.edu/2006/11/exhibit#');
+define('EXHIBIT_JS_URL',             variable_get('exhibit_js_url', 'http://static.simile.mit.edu/exhibit/api-2.0/exhibit-api.js'));
+define('EXHIBIT_MAP_JS_URL',         variable_get('exhibit_map_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/map/map-extension.js'));
+define('EXHIBIT_BARCHART_JS_URL',    variable_get('exhibit_barchart_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/chart/chart-extension.js'));
+define('EXHIBIT_SCATTERPLOT_JS_URL', variable_get('exhibit_scatterplot_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/chart/chart-extension-api.js'));
+define('EXHIBIT_TIMELINE_JS_URL',    variable_get('exhibit_timeline_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/time/time-extension.js'));
+define('EXHIBIT_CALENDAR_JS_URL',    variable_get('exhibit_calendar_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/calendar/calendar-extension-api.js'));
+define('EXHIBIT_FEED_LIFETIME',      (int)variable_get('timeline_feed_lifetime', 0));
+define('EXHIBIT_FEED_ETAG',          (bool)variable_get('timeline_feed_etag', TRUE));
+
 
 //////////////////////////////////////////////////////////////////////////////
 // Core API hooks
@@ -147,7 +153,7 @@ function exhibit_block($op = 'list', $delta = 0, $edit = array()) {
  */
 function exhibit_theme() {
   return array(
-    'exhibit' => array(
+    'exhibit_definition' => array(
       'arguments' => array('node' => NULL),
     ),
   );
@@ -268,7 +274,7 @@ function exhibit_form(&$node, &$param) {
 
   $form['exhibit'] = array('#type' => 'fieldset', '#title' => t('Exhibit'), '#collapsible' => TRUE, '#collapsed' => FALSE, '#tree' => TRUE);
   $form['exhibit']['feeds'] = array('#type' => 'checkboxes', '#title' => t('Data feeds'), '#default_value' => !empty($node->exhibit['feeds']) ? $node->exhibit['feeds'] : array(), '#options' => exhibit_get_feeds('title'), '#attributes' => array('class' => 'exhibit-feed-checkbox'), '#prefix' => '<div id="feed-field-selection">', '#suffix' => '</div>');
-  $form['exhibit']['definition'] = array('#type' => 'textarea', '#title' => t('Definition'), '#default_value' => @$node->exhibit['definition'], '#rows' => 10);
+  $form['exhibit']['definition'] = array('#type' => 'textarea', '#title' => t('Definition'), '#default_value' => !empty($node->exhibit['definition']) ? $node->exhibit['definition'] : theme('exhibit_definition'), '#rows' => 10);
   $form['exhibit']['facet_definition'] = array('#type' => 'textarea', '#title' => t('Facet definition'), '#default_value' => @$node->exhibit['facet_definition'], '#rows' => 5);
   $form['exhibit']['facet-generator-form-wrapper'] = array('#type' => 'fieldset', '#title' => t('Facet Generator'), '#collapsible' => TRUE, '#collapsed' => TRUE, '#tree' => TRUE, '#attributes' => array('id' => 'exhibit-facet-builder', 'style' => 'display:none;'), '#value' => '<div id="facet-generator-form"></div>');
 
@@ -283,9 +289,8 @@ function exhibit_view($node, $teaser = FALSE, $page = FALSE) {
   drupal_set_html_head('<script type="text/javascript" src="'. EXHIBIT_JS_URL .'"></script>'."\n");
 
   // Load any enabled Exhibit extensions
-  $enabled_extensions = array_filter(variable_get('exhibit_extensions', array()), 'is_string');
   foreach (exhibit_exhibit_views() as $id => $view) {
-    if (in_array($id, $enabled_extensions)) {
+    if (variable_get('exhibit_extensions_'. $id, FALSE)) {
       drupal_set_html_head('<script type="text/javascript" src="'. $view['href'] .'"></script>'."\n");
     }
   }
@@ -334,22 +339,27 @@ function exhibit_exhibit_views() {
     'map'       => array(
       'title'   => t('Map'),
       'class'   => 'Map',
-      'href'    => 'http://static.simile.mit.edu/exhibit/extensions-2.0/map/map-extension.js?gmapkey=' . variable_get('exhibit_gmap_key', ''),
+      'href'    => variable_get('exhibit_extensions_map_api', EXHIBIT_MAP_JS_URL) . '?gmapkey=' . (module_exists('gmap') ?  gmap_get_key() : variable_get('exhibit_gmap_key', '')),
     ),
     'barchart'  => array(
       'title'   => t('Barchart'),
       'class'   => 'Barchart',
-      'href'    => 'http://static.simile.mit.edu/exhibit/extensions-2.0/chart/chart-extension.js',
+      'href'    => variable_get('exhibit_extensions_barchart_api', EXHIBIT_BARCHART_JS_URL),
     ),
     'scatterplot' => array(
       'title'   => t('Scatterplot'),
       'class'   => 'Scatterplot',
-      'href'    => 'http://static.simile.mit.edu/exhibit/extensions-2.0/chart/chart-extension.js',
+      'href'    => variable_get('exhibit_extensions_scatterplot_api', EXHIBIT_SCATTERPLOT_JS_URL),
     ),
     'timeline'  => array(
       'title'   => t('Timeline'),
       'class'   => 'Timeline',
-      'href'    => 'http://static.simile.mit.edu/exhibit/extensions-2.0/time/time-extension.js',
+      'href'    => variable_get('exhibit_extensions_timeline_api', EXHIBIT_TIMELINE_JS_URL),
+    ),
+    'calendar'  => array(
+      'title'   => t('Calendar'),
+      'class'   => 'Calendar',
+      'href'    => variable_get('exhibit_extensions_calendar_api', EXHIBIT_CALENDAR_JS_URL),
     ),
     'tabular'   => array(
       'title'   => t('Tabular'),
@@ -545,7 +555,7 @@ function exhibit_compact_item($item) {
 //////////////////////////////////////////////////////////////////////////////
 // Theme callbacks
 
-function theme_exhibit() { // TODO
+function theme_exhibit_definition() { // TODO
   return '<div ex:role="viewPanel"><div ex:role="view"></div></div>';
 }
 

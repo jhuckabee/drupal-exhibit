@@ -32,17 +32,17 @@ function exhibit_admin_settings() {
   $form['api'] = array('#type' => 'fieldset', '#title' => t('Exhibit API'), '#collapsible' => TRUE, '#collapsed' => FALSE);
   $form['api']['exhibit_js_url'] = array('#type' => 'textfield', '#title' => t('Exhibit JS API'), '#default_value' => EXHIBIT_JS_URL, '#description' => t('Specify the location from where the Exhibit 2.0 JavaScript <acronym title="Application Programming Interface">API</acronym> will be loaded. By default, it is loaded directly from <a href="http://simile.mit.edu/" target="_blank">SIMILE\'s</a> servers, ensuring the use of the very latest version. However, should you require it, there are instructions available on how to <a href="http://simile.mit.edu/wiki/Exhibit/2.0/Running_Exhibit_Yourself" target="_blank">run Exhibit locally</a>.'));
 
-  $extensions = array();
+  // View settings
+  $form['extensions'] = array('#type' => 'fieldset', '#title' => t('Exhibit extensions'), '#collapsible' => TRUE, '#collapsed' => TRUE, '#description' => 'Select the Exhibit extensions you wish to enable below.  You can also specify an alternate API location for each extension.');
   foreach (exhibit_exhibit_views() as $id => $view) {
     if (isset($view->href)) {
-      $extensions[$id] = $view['title'];
+      $form['extensions']['exhibit_extensions_'. $id] = array('#type' => 'checkbox', '#title' => $view['title'], '#default_value' => variable_get('exhibit_extensions_'. $id, FALSE), '#description' => t(''));
+      $form['extensions']['exhibit_extensions_'. $id .'_api'] = array('#type' => 'textfield', '#title' => t($view['title'] . ' API'), '#default_value' => variable_get('exhibit_extensions_'. $id .'_api', constant('EXHIBIT_'. strtoupper($id) .'_JS_URL')));
+      if ($id == 'map') {
+        $form['extensions']['exhibit_gmap_key'] = array('#type' => 'textfield', '#title' => t('Google Maps API key'), '#default_value' => variable_get('exhibit_gmap_key', ''), '#description' => t('If you have the <a href="http://drupal.org/project/gmap">GMap</a> and/or <a href="http://drupal.org/project/keys">Keys API</a> modules installed and configured, you can leave this blank as Exhibit will pull the Google Maps API key used from <a href="/admin/settings/gmap">that configuration</a>.'));
+      }
     }
   }
-
-  // View settings
-  $form['extensions'] = array('#type' => 'fieldset', '#title' => t('Exhibit extensions'), '#collapsible' => TRUE, '#collapsed' => TRUE);
-  $form['extensions']['exhibit_extensions'] = array('#type' => 'checkboxes', '#title' => t('Enable extensions'), '#options' => $extensions, '#default_value' => variable_get('exhibit_extensions', array()), '#description' => t(''));
-  $form['extensions']['exhibit_gmap_key'] = array('#type' => 'textfield', '#title' => t('Google Maps API key'), '#default_value' => variable_get('exhibit_gmap_key', ''), '#description' => t(''));
 
   return system_settings_form($form);
 }
