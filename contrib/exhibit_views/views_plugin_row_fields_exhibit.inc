@@ -17,7 +17,6 @@ class views_plugin_row_fields_exhibit extends views_plugin_row {
     $output = array();
 
     foreach ($this->view->field as $id => $field) {
-      drupal_set_message('<pre>' . print_r($fiel, true) . '</pre>');
       // handle CCK multiple value fields
       if (array_key_exists('multiple', $field->options) && $field->aliases['vid'] == $field->field_alias) {
         $value = $this->_cck_multiple_render($field, $row);
@@ -113,4 +112,3 @@ class views_plugin_row_fields_exhibit extends views_plugin_row {
   }
 
 }
-
