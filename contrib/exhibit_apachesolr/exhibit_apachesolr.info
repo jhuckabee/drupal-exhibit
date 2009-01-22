@@ -1,0 +1,8 @@
+; $Id$
+name = Exhibit ApacheSolr
+description = Provides Exhibit JSON data feeds of Drupal ApacheSolr Search results
+package = SIMILE
+dependencies[] = exhibit
+dependencies[] = apachesolr
+core = 6.x
+php = 5.2

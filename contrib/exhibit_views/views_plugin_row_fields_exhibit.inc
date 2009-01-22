@@ -17,6 +17,7 @@ class views_plugin_row_fields_exhibit extends views_plugin_row {
     $output = array();
 
     foreach ($this->view->field as $id => $field) {
+      drupal_set_message('<pre>' . print_r($fiel, true) . '</pre>');
       // handle CCK multiple value fields
       if (array_key_exists('multiple', $field->options) && $field->aliases['vid'] == $field->field_alias) {
         $value = $this->_cck_multiple_render($field, $row);
@@ -45,13 +46,17 @@ class views_plugin_row_fields_exhibit extends views_plugin_row {
   }
 
   function _cck_date_render($field, $values) {
-      if (is_numeric($values->{$field->field_alias})) {
-        return format_date($values->{$field->field_alias}, 'custom', "Y-m-d\TH:i:s");
-      }
-      else {
-        return format_date(strtotime($values->{$field->field_alias}), 'custom', "Y-m-d\TH:i:s");
-      }
+    $alias = $field->field_alias;
+    if ($field->position && $field->position == 2) {
+      $alias = $alias. '2';
     }
+    if (is_numeric($values->{$alias})) {
+      return format_date($values->{$alias}, 'custom', "Y-m-d\TH:i:s");
+    }
+    else {
+      return format_date(strtotime($values->{$alias}), 'custom', "Y-m-d\TH:i:s");
+    }
+  }
 
   function _list_render($field, $values) {
     $fid = $values->{$field->field_alias};
