@@ -1,0 +1,7 @@
+Changes since 6.x-1.0-alpha2:
+* Added ability to set custom paths for Exhibit API and extensions
+* Added default Exhibit definition to Exhibit node
+* Updated default Exhibit API and Extension links to newest versions at simile-widgets.org
+* Re-implemented Views integration as custom Exhibit JSON feed display
+* Added Apache Solr Exhibit integration
+* Added custom localization module that use's Drupal user localization settings
