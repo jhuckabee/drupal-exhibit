@@ -13,6 +13,7 @@ function exhibit_admin_feed_types() {
     'text/plain'               => t('Tab-separated values'),
     'application/x-bibtex'     => t('Bibtex'),
     'application/vnd.google-spreadsheet' => t('Google Spreadsheet'),
+    'application/RDFa' => t('RDFa'),
   );
 }
 

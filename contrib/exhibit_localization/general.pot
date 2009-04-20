@@ -1,0 +1,579 @@
+# $Id$
+#
+# LANGUAGE translation of Drupal (general)
+# Copyright YEAR NAME <EMAIL@ADDRESS>
+# Generated from file: exhibit_l10n_integration.module: n/a
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"POT-Creation-Date: 2009-03-03 18:32-0700\n"
+"PO-Revision-Date: YYYY-mm-DD HH:MM+ZZZZ\n"
+"Last-Translator: NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <EMAIL@ADDRESS>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#: exhibit_l10n_integration.module:30
+msgid "Item"
+msgstr ""
+
+#: exhibit_l10n_integration.module:30
+msgid "Items"
+msgstr ""
+
+#: exhibit_l10n_integration.module:31
+msgid "label"
+msgstr ""
+
+#: exhibit_l10n_integration.module:31
+msgid "labels"
+msgstr ""
+
+#: exhibit_l10n_integration.module:31
+msgid "label of"
+msgstr ""
+
+#: exhibit_l10n_integration.module:31
+msgid "labels of"
+msgstr ""
+
+#: exhibit_l10n_integration.module:32
+msgid "type"
+msgstr ""
+
+#: exhibit_l10n_integration.module:32
+msgid "types"
+msgstr ""
+
+#: exhibit_l10n_integration.module:32
+msgid "type of"
+msgstr ""
+
+#: exhibit_l10n_integration.module:32
+msgid "types of"
+msgstr ""
+
+#: exhibit_l10n_integration.module:33
+msgid "URI"
+msgstr ""
+
+#: exhibit_l10n_integration.module:33
+msgid "URIs"
+msgstr ""
+
+#: exhibit_l10n_integration.module:33
+msgid "URI of"
+msgstr ""
+
+#: exhibit_l10n_integration.module:33
+msgid "URIs of"
+msgstr ""
+
+#: exhibit_l10n_integration.module:34;34
+msgid "a - z"
+msgstr ""
+
+#: exhibit_l10n_integration.module:34;34
+msgid "z - a"
+msgstr ""
+
+#: exhibit_l10n_integration.module:34
+msgid "smallest first"
+msgstr ""
+
+#: exhibit_l10n_integration.module:34
+msgid "largest first"
+msgstr ""
+
+#: exhibit_l10n_integration.module:34
+msgid "earliest first"
+msgstr ""
+
+#: exhibit_l10n_integration.module:34
+msgid "latest first"
+msgstr ""
+
+#: exhibit_l10n_integration.module:34
+msgid "false first"
+msgstr ""
+
+#: exhibit_l10n_integration.module:34
+msgid "true first"
+msgstr ""
+
+#: exhibit_l10n_integration.module:46;47;164
+msgid "missing"
+msgstr ""
+
+#: exhibit_l10n_integration.module:48
+msgid "n/a"
+msgstr ""
+
+#: exhibit_l10n_integration.module:49
+msgid "link"
+msgstr ""
+
+#: exhibit_l10n_integration.module:50
+msgid "Working"
+msgstr ""
+
+#: exhibit_l10n_integration.module:51
+msgid "We will show the relevant documentation after this message."
+msgstr ""
+
+#: exhibit_l10n_integration.module:52;53
+msgid "We will explain the error in details after this message."
+msgstr ""
+
+#: exhibit_l10n_integration.module:54
+msgid "We will browse to a web service where you can upload and check your code after this message."
+msgstr ""
+
+#: exhibit_l10n_integration.module:55
+msgid "The JSON data file"
+msgstr ""
+
+#: exhibit_l10n_integration.module:55
+msgid "contains errors"
+msgstr ""
+
+#: exhibit_l10n_integration.module:57
+msgid "We cannot locate the data file"
+msgstr ""
+
+#: exhibit_l10n_integration.module:57
+msgid "Check that the file name is correct."
+msgstr ""
+
+#: exhibit_l10n_integration.module:59
+msgid "Export"
+msgstr ""
+
+#: exhibit_l10n_integration.module:60
+msgid "Export All"
+msgstr ""
+
+#: exhibit_l10n_integration.module:61;63
+msgid "Close"
+msgstr ""
+
+#: exhibit_l10n_integration.module:62
+msgid "Copy this code to your clipboard as you would copy any text. Press ESC to close this dialog box."
+msgstr ""
+
+#: exhibit_l10n_integration.module:64
+msgid "RDF/XML"
+msgstr ""
+
+#: exhibit_l10n_integration.module:65
+msgid "Semantic wikitext"
+msgstr ""
+
+#: exhibit_l10n_integration.module:66
+msgid "Exhibit JSON"
+msgstr ""
+
+#: exhibit_l10n_integration.module:67
+msgid "Tab Separated Values"
+msgstr ""
+
+#: exhibit_l10n_integration.module:68
+msgid "Generated HTML of this view"
+msgstr ""
+
+#: exhibit_l10n_integration.module:72;73
+msgid "and"
+msgstr ""
+
+#: exhibit_l10n_integration.module:75
+msgid "true"
+msgstr ""
+
+#: exhibit_l10n_integration.module:76
+msgid "false"
+msgstr ""
+
+#: exhibit_l10n_integration.module:77
+msgid "$"
+msgstr ""
+
+#: exhibit_l10n_integration.module:78
+msgid "first"
+msgstr ""
+
+#: exhibit_l10n_integration.module:95
+msgid "Sun"
+msgstr ""
+
+#: exhibit_l10n_integration.module:95
+msgid "Mon"
+msgstr ""
+
+#: exhibit_l10n_integration.module:95
+msgid "Tue"
+msgstr ""
+
+#: exhibit_l10n_integration.module:95
+msgid "Wed"
+msgstr ""
+
+#: exhibit_l10n_integration.module:95
+msgid "Thr"
+msgstr ""
+
+#: exhibit_l10n_integration.module:95
+msgid "Fri"
+msgstr ""
+
+#: exhibit_l10n_integration.module:95
+msgid "Sat"
+msgstr ""
+
+#: exhibit_l10n_integration.module:96
+msgid "Sunday"
+msgstr ""
+
+#: exhibit_l10n_integration.module:96
+msgid "Monday"
+msgstr ""
+
+#: exhibit_l10n_integration.module:96
+msgid "Tuesday"
+msgstr ""
+
+#: exhibit_l10n_integration.module:96
+msgid "Wednesday"
+msgstr ""
+
+#: exhibit_l10n_integration.module:96
+msgid "Thursday"
+msgstr ""
+
+#: exhibit_l10n_integration.module:96
+msgid "Friday"
+msgstr ""
+
+#: exhibit_l10n_integration.module:96
+msgid "Saturday"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Jan"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Feb"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Mar"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Apr"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97;98
+msgid "May"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Jun"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Jul"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Aug"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Sep"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Oct"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Nov"
+msgstr ""
+
+#: exhibit_l10n_integration.module:97
+msgid "Dec"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "January"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "February"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "March"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "April"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "June"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "July"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "August"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "September"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "October"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "November"
+msgstr ""
+
+#: exhibit_l10n_integration.module:98
+msgid "December"
+msgstr ""
+
+#: exhibit_l10n_integration.module:99
+msgid "CE"
+msgstr ""
+
+#: exhibit_l10n_integration.module:100
+msgid "BCE"
+msgstr ""
+
+#: exhibit_l10n_integration.module:101
+msgid "am"
+msgstr ""
+
+#: exhibit_l10n_integration.module:102
+msgid "pm"
+msgstr ""
+
+#: exhibit_l10n_integration.module:103
+msgid "AM"
+msgstr ""
+
+#: exhibit_l10n_integration.module:104
+msgid "PM"
+msgstr ""
+
+#: exhibit_l10n_integration.module:113
+msgid "Remove this order"
+msgstr ""
+
+#: exhibit_l10n_integration.module:114
+msgid "sorted by"
+msgstr ""
+
+#: exhibit_l10n_integration.module:114
+msgid "Further sort the items"
+msgstr ""
+
+#: exhibit_l10n_integration.module:114
+msgid "then by"
+msgstr ""
+
+#: exhibit_l10n_integration.module:115
+msgid "Sorted by"
+msgstr ""
+
+#: exhibit_l10n_integration.module:117
+msgid "Removed order by"
+msgstr ""
+
+#: exhibit_l10n_integration.module:119
+msgid "grouped as sorted"
+msgstr ""
+
+#: exhibit_l10n_integration.module:120
+msgid "group as sorted"
+msgstr ""
+
+#: exhibit_l10n_integration.module:121
+msgid "ungroup as sorted"
+msgstr ""
+
+#: exhibit_l10n_integration.module:122
+msgid "show all results"
+msgstr ""
+
+#: exhibit_l10n_integration.module:123
+msgid "show first few results"
+msgstr ""
+
+#: exhibit_l10n_integration.module:124
+msgid "Show only the first"
+msgstr ""
+
+#: exhibit_l10n_integration.module:124;126
+msgid "results"
+msgstr ""
+
+#: exhibit_l10n_integration.module:126
+msgid "Show all"
+msgstr ""
+
+#: exhibit_l10n_integration.module:130
+msgid "Table"
+msgstr ""
+
+#: exhibit_l10n_integration.module:131
+msgid "View items in a table"
+msgstr ""
+
+#: exhibit_l10n_integration.module:132
+msgid "Click to sort by this column"
+msgstr ""
+
+#: exhibit_l10n_integration.module:133
+msgid "Click to sort in the reverse order"
+msgstr ""
+
+#: exhibit_l10n_integration.module:134
+msgid "sorted ascending by"
+msgstr ""
+
+#: exhibit_l10n_integration.module:134
+msgid "sorted descending by"
+msgstr ""
+
+#: exhibit_l10n_integration.module:138
+msgid "Thumbnails"
+msgstr ""
+
+#: exhibit_l10n_integration.module:139
+msgid "View items as thumbnails"
+msgstr ""
+
+#: exhibit_l10n_integration.module:142
+msgid "Tiles"
+msgstr ""
+
+#: exhibit_l10n_integration.module:143
+msgid "View items as tiles in a list"
+msgstr ""
+
+#: exhibit_l10n_integration.module:146
+msgid "select"
+msgstr ""
+
+#: exhibit_l10n_integration.module:146
+msgid "view"
+msgstr ""
+
+#: exhibit_l10n_integration.module:148
+msgid "The specification for one of the views is missing the viewClass field."
+msgstr ""
+
+#: exhibit_l10n_integration.module:149;151
+msgid "The viewClass attribute value"
+msgstr ""
+
+#: exhibit_l10n_integration.module:149;151
+msgid "you have specified"
+msgstr ""
+
+#: exhibit_l10n_integration.module:149
+msgid "for one of the views does not evaluate to a Javascript function."
+msgstr ""
+
+#: exhibit_l10n_integration.module:151
+msgid "for one of the views is not a valid Javascript expression."
+msgstr ""
+
+#: exhibit_l10n_integration.module:155
+msgid "Reset All Filters"
+msgstr ""
+
+#: exhibit_l10n_integration.module:156
+msgid "Clear all filters and see the original items"
+msgstr ""
+
+#: exhibit_l10n_integration.module:157
+msgid "Reset all filters"
+msgstr ""
+
+#: exhibit_l10n_integration.module:160
+msgid "filtered from"
+msgstr ""
+
+#: exhibit_l10n_integration.module:160
+msgid "originally"
+msgstr ""
+
+#: exhibit_l10n_integration.module:163
+msgid "mixed"
+msgstr ""
+
+#: exhibit_l10n_integration.module:165
+msgid "others"
+msgstr ""
+
+#: exhibit_l10n_integration.module:168
+msgid "Clear these selections"
+msgstr ""
+
+#: exhibit_l10n_integration.module:169
+msgid "Select"
+msgstr ""
+
+#: exhibit_l10n_integration.module:169;170;171
+msgid "in facet"
+msgstr ""
+
+#: exhibit_l10n_integration.module:170
+msgid "Unselect"
+msgstr ""
+
+#: exhibit_l10n_integration.module:171
+msgid "Select only"
+msgstr ""
+
+#: exhibit_l10n_integration.module:172
+msgid "Clear selections in facet"
+msgstr ""
+
+#: exhibit_l10n_integration.module:173
+msgid "Text search"
+msgstr ""
+
+#: exhibit_l10n_integration.module:174
+msgid "Clear text search"
+msgstr ""
+
+#: exhibit_l10n_integration.module:175
+msgid "missing this field"
+msgstr ""
+
+#: exhibit_l10n_integration.module:179
+msgid "out of"
+msgstr ""
+
+#: exhibit_l10n_integration.module:179
+msgid "cannot be plotted"
+msgstr ""
+
+#: exhibit_l10n_integration.module:0
+msgid "exhibit_l10n_integration"
+msgstr ""
+

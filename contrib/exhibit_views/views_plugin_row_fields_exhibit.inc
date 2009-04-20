@@ -46,9 +46,6 @@ class views_plugin_row_fields_exhibit extends views_plugin_row {
 
   function _cck_date_render($field, $values) {
     $alias = $field->field_alias;
-    if ($field->position && $field->position == 2) {
-      $alias = $alias. '2';
-    }
     if (is_numeric($values->{$alias})) {
       return format_date($values->{$alias}, 'custom', "Y-m-d\TH:i:s");
     }

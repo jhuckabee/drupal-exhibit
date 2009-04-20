@@ -1,0 +1,281 @@
+<?php
+// $Id$
+
+//////////////////////////////////////////////////////////////////////////////
+// Core API hooks
+
+/**
+ * Implementation of hook_menu().
+ */
+function exhibit_localization_menu() {
+  return array(
+    'exhibit/locale.js' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_api_localization',
+    ),
+    'exhibit/extensions/calendar/locale.js' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_calendar_extension_localization',
+    ),
+    'exhibit/extensions/chart/locale.js' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_chart_extension_localization',
+    ),
+    'exhibit/extensions/map/locale.js' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_map_extension_localization',
+    ),
+    'exhibit/extensions/time/locale.js' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_time_extension_localization',
+    ),
+    'exhibit/extensions/timeplot/locale.js' => array(
+      'type' => MENU_CALLBACK,
+      'access arguments' => array('access exhibits'),
+      'page callback' => 'exhibit_timeplot_extension_localization',
+    ),
+  );
+}
+
+//////////////////////////////////////////////////////////////////////////////
+// Menu callbacks
+
+function exhibit_api_localization() {
+  $body =  join(array("/* database-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.Database)){Exhibit.Database.l10n={};}",
+            "Exhibit.Database.l10n.itemType={label:\"".t("Item")."\",pluralLabel:\"".t("Items")."\",uri:\"http://simile.mit.edu/2006/11/exhibit#Item\"};",
+            "Exhibit.Database.l10n.labelProperty={label:\"".t("label")."\",pluralLabel:\"".t("labels")."\",reverseLabel:\"".t("label of")."\",reversePluralLabel:\"".t("labels of")."\"};",
+            "Exhibit.Database.l10n.typeProperty={label:\"".t("type")."\",pluralLabel:\"".t("types")."\",reverseLabel:\"".t("type of")."\",reversePluralLabel:\"".t("types of")."\"};",
+            "Exhibit.Database.l10n.uriProperty={label:\"".t("URI")."\",pluralLabel:\"".t("URIs")."\",reverseLabel:\"".t("URI of")."\",reversePluralLabel:\"".t("URIs of")."\"};",
+            "Exhibit.Database.l10n.sortLabels={\"text\":{ascending:\"".t("a - z")."\",descending:\"".t("z - a")."\"},\"number\":{ascending:\"".t("smallest first")."\",descending:\"".t("largest first")."\"},\"date\":{ascending:\"".t("earliest first")."\",descending:\"".t("latest first")."\"},\"boolean\":{ascending:\"".t("false first")."\",descending:\"".t("true first")."\"},\"item\":{ascending:\"".t("a - z")."\",descending:\"".t("z - a")."\"}};",
+            "Exhibit.Database.l10n.labelItemsOfType=function(F,C,G,B){var A=F==1?Exhibit.Database.l10n.itemType.label:Exhibit.Database.l10n.itemType.pluralLabel;",
+            "var E=G.getType(C);",
+            "if(E){A=E.getLabel();",
+            "if(F!=1){var H=E.getProperty(\"pluralLabel\");",
+            "if(H){A=H;",
+            "}}}var D=document.createElement(\"span\");",
+            "D.innerHTML=\"<span class='\"+B+\"'>\"+F+\"</span> \"+A;",
+            "return D;",
+            "};",
+            "/* exhibit-l10n.js */",
+            "if(!(\"l10n\" in Exhibit)){Exhibit.l10n={};}",
+            "Exhibit.l10n.missingLabel=\"".t("missing")."\";",
+            "Exhibit.l10n.missingSortKey=\"(".t("missing").")\";",
+            "Exhibit.l10n.notApplicableSortKey=\"(".t("n/a").")\";",
+            "Exhibit.l10n.itemLinkLabel=\"".t("link")."\";",
+            "Exhibit.l10n.busyIndicatorMessage=\"".t("Working")."...\";",
+            "Exhibit.l10n.showDocumentationMessage=\"".t("We will show the relevant documentation after this message.")."\";",
+            "Exhibit.l10n.showJavascriptValidationMessage=\"".t("We will explain the error in details after this message.")."\";",
+            "Exhibit.l10n.showJsonValidationMessage=\"".t("We will explain the error in details after this message.")."\";",
+            "Exhibit.l10n.showJsonValidationFormMessage=\"".t("We will browse to a web service where you can upload and check your code after this message.")."\";",
+            "Exhibit.l10n.badJsonMessage=function(A,B){return\"".t("The JSON data file")."\\n\"+A+\"\\n".t("contains errors")." =\\n\\n\"+B;",
+            "};",
+            "Exhibit.l10n.failedToLoadDataFileMessage=function(A){return\"".t("We cannot locate the data file")."\\n  \"+A+\"\\n".t("Check that the file name is correct.")."\";",
+            "};",
+            "Exhibit.l10n.exportButtonLabel=\"".t("Export")."\";",
+            "Exhibit.l10n.exportAllButtonLabel=\"".t("Export All")."\";",
+            "Exhibit.l10n.exportDialogBoxCloseButtonLabel=\"".t("Close")."\";",
+            "Exhibit.l10n.exportDialogBoxPrompt=\"".t("Copy this code to your clipboard as you would copy any text. Press ESC to close this dialog box.")."\";",
+            "Exhibit.l10n.focusDialogBoxCloseButtonLabel=\"".t("Close")."\";",
+            "Exhibit.l10n.rdfXmlExporterLabel=\"".t("RDF/XML")."\";",
+            "Exhibit.l10n.smwExporterLabel=\"".t("Semantic wikitext")."\";",
+            "Exhibit.l10n.exhibitJsonExporterLabel=\"".t("Exhibit JSON")."\";",
+            "Exhibit.l10n.tsvExporterLabel=\"".t("Tab Separated Values")."\";",
+            "Exhibit.l10n.htmlExporterLabel=\"".t("Generated HTML of this view")."\";",
+            "/* formatter-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.Formatter)){Exhibit.Formatter.l10n={};}",
+            "Exhibit.Formatter.l10n.listSeparator=\", \";",
+            "Exhibit.Formatter.l10n.listLastSeparator=\", ".t("and")." \";",
+            "Exhibit.Formatter.l10n.listPairSeparator=\" ".t("and")." \";",
+            "Exhibit.Formatter.l10n.textEllipsis=\"...\";",
+            "Exhibit.Formatter.l10n.booleanTrue=\"".t("true")."\";",
+            "Exhibit.Formatter.l10n.booleanFalse=\"".t("false")."\";",
+            "Exhibit.Formatter.l10n.currencySymbol=\"".t("$")."\";",
+            "Exhibit.Formatter.l10n.currencySymbolPlacement=\"".t("first")."\";",
+            "Exhibit.Formatter.l10n.currencyShowSign=true;",
+            "Exhibit.Formatter.l10n.currencyShowRed=false;",
+            "Exhibit.Formatter.l10n.currencyShowParentheses=false;",
+            "Exhibit.Formatter.l10n.dateTimeDefaultFormat=\"EEE, MMM d, yyyy, hh:mm a\";",
+            "Exhibit.Formatter.l10n.dateShortFormat=\"dd/MM/yy\";",
+            "Exhibit.Formatter.l10n.timeShortFormat=\"hh:mm a\";",
+            "Exhibit.Formatter.l10n.dateTimeShortFormat=\"dd/MM/yy hh:mm a\";",
+            "Exhibit.Formatter.l10n.dateMediumFormat=\"EEE, MMM d, yyyy\";",
+            "Exhibit.Formatter.l10n.timeMediumFormat=\"hh:mm a\";",
+            "Exhibit.Formatter.l10n.dateTimeMediumFormat=\"EEE, MMM d, yyyy, hh:mm a\";",
+            "Exhibit.Formatter.l10n.dateLongFormat=\"EEEE, MMMM d, yyyy\";",
+            "Exhibit.Formatter.l10n.timeLongFormat=\"HH:mm:ss z\";",
+            "Exhibit.Formatter.l10n.dateTimeLongFormat=\"EEEE, MMMM d, yyyy, HH:mm:ss z\";",
+            "Exhibit.Formatter.l10n.dateFullFormat=\"EEEE, MMMM d, yyyy\";",
+            "Exhibit.Formatter.l10n.timeFullFormat=\"HH:mm:ss.S z\";",
+            "Exhibit.Formatter.l10n.dateTimeFullFormat=\"EEEE, MMMM d, yyyy G, HH:mm:ss.S z\";",
+            "Exhibit.Formatter.l10n.shortDaysOfWeek=[\"".t("Sun")."\",\"".t("Mon")."\",\"".t("Tue")."\",\"".t("Wed")."\",\"".t("Thu")."\",\"".t("Fri")."\",\"".t("Sat")."\"];",
+            "Exhibit.Formatter.l10n.daysOfWeek=[\"".t("Sunday")."\",\"".t("Monday")."\",\"".t("Tuesday")."\",\"".t("Wednesday")."\",\"".t("Thursday")."\",\"".t("Friday")."\",\"".t("Saturday")."\"];",
+            "Exhibit.Formatter.l10n.shortMonths=[\"".t("Jan")."\",\"".t("Feb")."\",\"".t("Mar")."\",\"".t("Apr")."\",\"".t("May")."\",\"".t("Jun")."\",\"".t("Jul")."\",\"".t("Aug")."\",\"".t("Sep")."\",\"".t("Oct")."\",\"".t("Nov")."\",\"".t("Dec")."\"];",
+            "Exhibit.Formatter.l10n.months=[\"".t("January")."\",\"".t("February")."\",\"".t("March")."\",\"".t("April")."\",\"".t("May")."\",\"".t("June")."\",\"".t("July")."\",\"".t("August")."\",\"".t("September")."\",\"".t("October")."\",\"".t("November")."\",\"".t("December")."\"];",
+            "Exhibit.Formatter.l10n.commonEra=\"".t("CE")."\";",
+            "Exhibit.Formatter.l10n.beforeCommonEra=\"".t("BCE")."\";",
+            "Exhibit.Formatter.l10n.beforeNoon=\"".t("am")."\";",
+            "Exhibit.Formatter.l10n.afterNoon=\"".t("pm")."\";",
+            "Exhibit.Formatter.l10n.BeforeNoon=\"".t("AM")."\";",
+            "Exhibit.Formatter.l10n.AfterNoon=\"".t("PM")."\";",
+            "/* lens-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.Lens)){Exhibit.Lens.l10n={};",
+            "}",
+            "/* ui-context-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.UIContext)){Exhibit.UIContext.l10n={};}",
+            "Exhibit.UIContext.l10n.initialSettings={\"bubbleWidth\":400,\"bubbleHeight\":300};",
+            "/* ordered-view-frame-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.OrderedViewFrame)){Exhibit.OrderedViewFrame.l10n={};}",
+            "Exhibit.OrderedViewFrame.l10n.removeOrderLabel=\"".t("Remove this order")."\";",
+            "Exhibit.OrderedViewFrame.l10n.sortingControlsTemplate=\"".t("sorted by").": <span id='ordersSpan'></span>; <a id='thenSortByAction' href='javascript:void' class='exhibit-action' title='".t("Further sort the items")."'>".t("then by")."...</a>\";",
+            "Exhibit.OrderedViewFrame.l10n.formatSortActionTitle=function(B,A){return\"".t("Sorted by")." \"+B+\" (\"+A+\")\";",
+            "};",
+            "Exhibit.OrderedViewFrame.l10n.formatRemoveOrderActionTitle=function(B,A){return\"".t("Removed order by")." \"+B+\" (\"+A+\")\";",
+            "};",
+            "Exhibit.OrderedViewFrame.l10n.groupedAsSortedOptionLabel=\"".t("grouped as sorted")."\";",
+            "Exhibit.OrderedViewFrame.l10n.groupAsSortedActionTitle=\"".t("group as sorted")."\";",
+            "Exhibit.OrderedViewFrame.l10n.ungroupAsSortedActionTitle=\"".t("ungroup as sorted")."\";",
+            "Exhibit.OrderedViewFrame.l10n.showAllActionTitle=\"".t("show all results")."\";",
+            "Exhibit.OrderedViewFrame.l10n.dontShowAllActionTitle=\"".t("show first few results")."\";",
+            "Exhibit.OrderedViewFrame.l10n.formatDontShowAll=function(A){return\"".t("Show only the first")." \"+A+\" ".t("results")."\";",
+            "};",
+            "Exhibit.OrderedViewFrame.l10n.formatShowAll=function(A){return\"".t("Show all")." \"+A+\" ".t("results")."\";",
+            "};",
+            "/* tabular-view-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.TabularView)){Exhibit.TabularView.l10n={};}",
+            "Exhibit.TabularView.l10n.viewLabel=\"".t("Table")."\";",
+            "Exhibit.TabularView.l10n.viewTooltip=\"".t("View items in a table")."\";",
+            "Exhibit.TabularView.l10n.columnHeaderSortTooltip=\"".t("Click to sort by this column")."\";",
+            "Exhibit.TabularView.l10n.columnHeaderReSortTooltip=\"".t("Click to sort in the reverse order")."\";",
+            "Exhibit.TabularView.l10n.makeSortActionTitle=function(A,B){return(B?\"".t("sorted ascending by")." \":\"".t("sorted descending by")." \")+A;",
+            "};",
+            "/* thumbnail-view-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.ThumbnailView)){Exhibit.ThumbnailView.l10n={};}",
+            "Exhibit.ThumbnailView.l10n.viewLabel=\"".t("Thumbnails")."\";",
+            "Exhibit.ThumbnailView.l10n.viewTooltip=\"".t("View items as thumbnails")."\";",
+            "/* tile-view-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.TileView)){Exhibit.TileView.l10n={};}",
+            "Exhibit.TileView.l10n.viewLabel=\"".t("Tiles")."\";",
+            "Exhibit.TileView.l10n.viewTooltip=\"".t("View items as tiles in a list")."\";",
+            "/* view-panel-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.ViewPanel)){Exhibit.ViewPanel.l10n={};}",
+            "Exhibit.ViewPanel.l10n.createSelectViewActionTitle=function(A){return\"".t("select")." \"+A+\" ".t("view")."\";",
+            "};",
+            "Exhibit.ViewPanel.l10n.missingViewClassMessage=\"".t("The specification for one of the views is missing the viewClass field.")."\";",
+            "Exhibit.ViewPanel.l10n.viewClassNotFunctionMessage=function(A){return\"".t("The viewClass attribute value")." '\"+A+\"' ".t("you have specified")."\\n".t("for one of the views does not evaluate to a Javascript function.")."\";",
+            "};",
+            "Exhibit.ViewPanel.l10n.badViewClassMessage=function(A){return\"".t("The viewClass attribute value")." '\"+A+\"' ".t("you have specified")."\\n".t("for one of the views is not a valid Javascript expression.")."\";",
+            "};",
+            "/* collection-summary-widget-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.CollectionSummaryWidget)){Exhibit.CollectionSummaryWidget.l10n={};}",
+            "Exhibit.CollectionSummaryWidget.l10n.resetFiltersLabel=\"".t("Reset All Filters")."\";",
+            "Exhibit.CollectionSummaryWidget.l10n.resetFiltersTooltip=\"".t("Clear all filters and see the original items")."\";",
+            "Exhibit.CollectionSummaryWidget.l10n.resetActionTitle=\"".t("Reset all filters")."\";",
+            "Exhibit.CollectionSummaryWidget.l10n.allResultsTemplate=\"<span class='%0' id='resultDescription'></span>\";",
+            "Exhibit.CollectionSummaryWidget.l10n.noResultsTemplate=\"<span class='%0'><span class='%1'>0</span> results</span> (<span id='resetActionLink'></span>)\";",
+            "Exhibit.CollectionSummaryWidget.l10n.filteredResultsTemplate=\"<span class='%0' id='resultDescription'></span> ".t("filtered from")." <span id='originalCountSpan'>0</span> ".t("originally")." (<span id='resetActionLink'></span>)\";",
+            "/* coders-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.Coders)){Exhibit.Coders.l10n={};}",
+            "Exhibit.Coders.l10n.mixedCaseLabel=\"".t("mixed")."\";",
+            "Exhibit.Coders.l10n.missingCaseLabel=\"".t("missing")."\";",
+            "Exhibit.Coders.l10n.othersCaseLabel=\"".t("others")."\";",
+            "/* facets-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.FacetUtilities)){Exhibit.FacetUtilities.l10n={};}",
+            "Exhibit.FacetUtilities.l10n.clearSelectionsTooltip=\"".t("Clear these selections")."\";",
+            "Exhibit.FacetUtilities.l10n.facetSelectActionTitle=\"".t("Select")." %0 ".t("in facet")." %1\";",
+            "Exhibit.FacetUtilities.l10n.facetUnselectActionTitle=\"".t("Unselect")." %0 ".t("in facet")." %1\";",
+            "Exhibit.FacetUtilities.l10n.facetSelectOnlyActionTitle=\"".t("Select only")." %0 ".t("in facet")." %1\";",
+            "Exhibit.FacetUtilities.l10n.facetClearSelectionsActionTitle=\"".t("Clear selections in facet")." %0\";",
+            "Exhibit.FacetUtilities.l10n.facetTextSearchActionTitle=\"".t("Text search")." %0\";",
+            "Exhibit.FacetUtilities.l10n.facetClearTextSearchActionTitle=\"".t("Clear text search")."\";",
+            "Exhibit.FacetUtilities.l10n.missingThisField=\"(".t("missing this field").")\";",
+            "/* views-l10n.js */",
+            "if(!(\"l10n\" in Exhibit.ViewUtilities)){Exhibit.ViewUtilities.l10n={};}",
+            "Exhibit.ViewUtilities.l10n.unplottableMessageFormatter=function(B,A,C){var D=A.length;",
+            "return String.substitute(\"<a class='exhibit-action exhibit-views-unplottableCount' href='javascript:void' id='unplottableCountLink'>%0</a> ".t("out of")." <class class='exhibit-views-totalCount'>%1</span> ".t("cannot be plotted").".\",[D==1?(D+\" result\"):(D+\" results\"),B]);",
+            "};"), "\n");
+
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
+  drupal_set_header('Content-Length: ' . strlen($body));
+
+  print $body;
+}
+
+function exhibit_calendar_extension_localization() {
+  $body = join(array("if (!(\"l10n\" in Exhibit.CalendarView)) {",
+                      "Exhibit.CalendarView.l10n = {};",
+                      "}",
+                      "Exhibit.CalendarView.l10n.viewLabel = \"".t("Calendar")."\";",
+                      "Exhibit.CalendarView.l10n.viewTooltip = \"".t("View items on a calendar")."\";",
+                      "Exhibit.CalendarView.l10n.viewMore = \"".t("View More")."\";",
+                      "Exhibit.CalendarView.l10n.clearDateRangeSearch = \"".t("Clear date range search")."\";"), "\n");
+
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
+  drupal_set_header('Content-Length: ' . strlen($body));
+
+  print $body;
+}
+
+function exhibit_chart_extension_localization() {
+  $body = join(array("if (!(\"l10n\" in Exhibit.ScatterPlotView)) {",
+                      "Exhibit.ScatterPlotView.l10n = {};",
+                      "}",
+                      "Exhibit.ScatterPlotView.l10n.viewLabel = \"".t("Scatter Plot")."\";",
+                      "Exhibit.ScatterPlotView.l10n.viewTooltip = \"".t("View items on a scatter plot")."\";",
+                      "if (!(\"l10n\" in Exhibit.PivotTableView)) {",
+                      "Exhibit.PivotTableView.l10n = {};",
+                      "}",
+                      "Exhibit.PivotTableView.l10n.viewLabel = \"".t("Pivot Table")."\";",
+                      "Exhibit.PivotTableView.l10n.viewTooltip = \"".t("View items on a pivot table")."\";"), "\n");
+
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
+  drupal_set_header('Content-Length: ' . strlen($body));
+
+  print $body;
+}
+
+function exhibit_map_extension_localization() {
+  $body = join(array("if (!(\"l10n\" in Exhibit.MapView)) {",
+                      "Exhibit.MapView.l10n = {};",
+                      "}",
+                      "Exhibit.MapView.l10n.viewLabel = \"".t("Map")."\";",
+                      "Exhibit.MapView.l10n.viewTooltip = \"".t("View items on a map")."\";"), "\n");
+
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
+  drupal_set_header('Content-Length: ' . strlen($body));
+
+  print $body;
+}
+
+function exhibit_time_extension_localization() {
+  $body = join(array("if (!(\"l10n\" in Exhibit.TimelineView)) {",
+                      "Exhibit.TimelineView.l10n = {};",
+                      "}",
+                      "Exhibit.TimelineView.l10n.viewLabel = \"".t("Timeline")."\";",
+                      "Exhibit.TimelineView.l10n.viewTooltip = \"".t("View items on a timeline")."\";"), "\n");
+
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
+  drupal_set_header('Content-Length: ' . strlen($body));
+
+  print $body;
+}
+
+function exhibit_timeplot_extension_localization() {
+  $body = join(array("if (!(\"l10n\" in Exhibit.TimeplotView)) {",
+                      "Exhibit.TimeplotView.l10n = {};",
+                      "}",
+                      "Exhibit.TimeplotView.l10n.viewLabel = \"".t("Timeplot")."\";",
+                      "Exhibit.TimeplotView.l10n.viewTooltip = \"".t("View items on a timeplot")."\";"), "\n");
+
+  drupal_set_header('Content-Type: text/javascript; charset=utf-8');
+  drupal_set_header('Content-Length: ' . strlen($body));
+
+  print $body;
+}
+
+

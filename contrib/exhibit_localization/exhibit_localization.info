@@ -1,0 +1,6 @@
+; $Id$
+name = Exhibit Localization
+description = Provides Drupal integration with Exhibit
+package = SIMILE
+dependencies[] = exhibit
+core = 6.x

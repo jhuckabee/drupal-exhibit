@@ -5,13 +5,13 @@
 // Module settings
 
 define('EXHIBIT_DATE_FORMAT',        '%Y-%m-%dT%H:%M:%SZ');
-define('EXHIBIT_XMLNS_URL',          'http://simile.mit.edu/2006/11/exhibit#');
-define('EXHIBIT_JS_URL',             variable_get('exhibit_js_url', 'http://static.simile.mit.edu/exhibit/api-2.0/exhibit-api.js'));
-define('EXHIBIT_MAP_JS_URL',         variable_get('exhibit_map_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/map/map-extension.js'));
-define('EXHIBIT_BARCHART_JS_URL',    variable_get('exhibit_barchart_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/chart/chart-extension.js'));
-define('EXHIBIT_SCATTERPLOT_JS_URL', variable_get('exhibit_scatterplot_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/chart/chart-extension-api.js'));
-define('EXHIBIT_TIMELINE_JS_URL',    variable_get('exhibit_timeline_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/time/time-extension.js'));
-define('EXHIBIT_CALENDAR_JS_URL',    variable_get('exhibit_calendar_js_url', 'http://static.simile.mit.edu/exhibit/extensions-2.0/calendar/calendar-extension-api.js'));
+define('EXHIBIT_XMLNS_URL',          'http://simile.mit.edu/2006/11/exhibit#');  // TODO:  What's this for? This needs to be updated or removed
+define('EXHIBIT_JS_URL',             variable_get('exhibit_js_url', 'http://api.simile-widgets.org/exhibit/2.2.0/exhibit-api.js'));
+define('EXHIBIT_MAP_JS_URL',         variable_get('exhibit_map_js_url', 'http://api.simile-widgets.org/exhibit/2.2.0/extensions/map/map-extension.js'));
+define('EXHIBIT_BARCHART_JS_URL',    variable_get('exhibit_barchart_js_url', 'http://api.simile-widgets.org/exhibit/2.2.0/extensions/chart/chart-extension.js'));
+define('EXHIBIT_SCATTERPLOT_JS_URL', variable_get('exhibit_scatterplot_js_url', 'http://api.simile-widgets.org/exhibit/2.2.0/extensions/chart/chart-extension.js'));
+define('EXHIBIT_TIMELINE_JS_URL',    variable_get('exhibit_timeline_js_url', 'http://api.simile-widgets.org/exhibit/2.2.0/extensions/time/time-extension.js'));
+define('EXHIBIT_CALENDAR_JS_URL',    variable_get('exhibit_calendar_js_url', 'http://api.simile-widgets.org/exhibit/2.2.0/extensions/calendar/calendar-extension.js'));
 define('EXHIBIT_FEED_LIFETIME',      (int)variable_get('timeline_feed_lifetime', 0));
 define('EXHIBIT_FEED_ETAG',          (bool)variable_get('timeline_feed_etag', TRUE));
 
